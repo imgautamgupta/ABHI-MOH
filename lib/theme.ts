@@ -19,6 +19,7 @@ export const COLOR_TOKENS = {
     primary: '#1F1A17',    // Deep Espresso/Charcoal
     secondary: '#6A625A',  // Muted Warm Taupe
     muted: '#9E948A',      // Soft Subtitle
+    // HI THIS IS YASH
   },
   border: {
     subtle: '#DDD3C8',     // Subtle Linen Border

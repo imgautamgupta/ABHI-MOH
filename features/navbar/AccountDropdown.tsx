@@ -1,0 +1,51 @@
+'use client';
+
+import React, { useState, useRef, useEffect } from 'react';
+import { User } from 'lucide-react';
+import { IconButton } from './IconButton';
+import { AccountMenu } from '@/features/account/AccountMenu';
+
+export const AccountDropdown: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Click outside and Escape listener
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  return (
+    <div ref={dropdownRef} className="relative inline-block text-left">
+      <IconButton
+        ariaLabel="User Account"
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        <User className="w-[20px] h-[20px] text-primary-text" />
+      </IconButton>
+
+      <AccountMenu isOpen={isOpen} onClose={() => setIsOpen(false)} />
+    </div>
+  );
+};
+
+AccountDropdown.displayName = 'AccountDropdown';

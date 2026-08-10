@@ -29,7 +29,7 @@ export const DesktopNav: React.FC = () => {
         >
           {/* Official AM Monogram Asset (Dominant, 52-58px height) */}
           <Image
-            src="/assets/LOGO.png"
+            src="/images/abhi-moh-monogram.png"
             alt="ABHI-MOH Monogram"
             width={120}
             height={60}

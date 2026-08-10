@@ -41,7 +41,7 @@ export const MobileNav: React.FC = () => {
       <div className="flex items-center">
         <Link href="/" className="flex items-center gap-2.5 focus:outline-none select-none" aria-label="ABHI-MOH Home">
           <Image
-            src="/assets/LOGO.png"
+            src="/images/abhi-moh-monogram.png"
             alt="ABHI-MOH Monogram"
             width={90}
             height={45}
@@ -109,7 +109,7 @@ export const MobileNav: React.FC = () => {
               <div className="flex items-center justify-between pb-6 border-b border-[#E8DFD5]">
                 <Link href="/" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-2.5">
                   <Image
-                    src="/assets/LOGO.png"
+                    src="/images/abhi-moh-monogram.png"
                     alt="ABHI-MOH Monogram"
                     width={80}
                     height={40}

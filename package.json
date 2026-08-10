@@ -13,6 +13,8 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@types/three": "^0.185.4",
+    "@wix/sdk": "^1.21.14",
+    "@wix/stores": "^1.0.856",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.42.2",

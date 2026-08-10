@@ -54,7 +54,8 @@ export const Delivery: React.FC<DeliveryProps> = ({
           id="del-address"
           required
           rows={3}
-          placeholder="Maison Residence, 42 Royal Palace Avenue"
+          autoComplete="street-address"
+          placeholder="Street address, building, suite, etc."
           value={data.address}
           onChange={(e) => onChange({ ...data, address: e.target.value })}
           className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none transition-colors duration-200 resize-none"
@@ -71,7 +72,8 @@ export const Delivery: React.FC<DeliveryProps> = ({
             id="del-city"
             type="text"
             required
-            placeholder="Jaipur"
+            autoComplete="address-level2"
+            placeholder="City"
             value={data.city}
             onChange={(e) => onChange({ ...data, city: e.target.value })}
             className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
@@ -86,7 +88,8 @@ export const Delivery: React.FC<DeliveryProps> = ({
             id="del-state"
             type="text"
             required
-            placeholder="Rajasthan"
+            autoComplete="address-level1"
+            placeholder="State"
             value={data.state}
             onChange={(e) => onChange({ ...data, state: e.target.value })}
             className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
@@ -101,9 +104,11 @@ export const Delivery: React.FC<DeliveryProps> = ({
             id="del-pincode"
             type="text"
             required
-            placeholder="302001"
+            autoComplete="postal-code"
+            maxLength={6}
+            placeholder="6-digit pincode"
             value={data.pincode}
-            onChange={(e) => onChange({ ...data, pincode: e.target.value })}
+            onChange={(e) => onChange({ ...data, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
             className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
           />
         </div>

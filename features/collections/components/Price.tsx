@@ -12,10 +12,9 @@ export const Price: React.FC<PriceProps> = ({ amount, className }) => {
   return (
     <span
       className={cn(
-        'font-satoshi text-base sm:text-lg font-semibold tracking-wide block text-left',
+        'font-hero text-[#7D2130] text-base sm:text-lg font-medium tracking-wide block text-left mt-1',
         className
       )}
-      style={{ color: '#E5C388' }}
     >
       {amount}
     </span>
@@ -23,3 +22,4 @@ export const Price: React.FC<PriceProps> = ({ amount, className }) => {
 };
 
 Price.displayName = 'Price';
+

@@ -137,7 +137,13 @@ export const EditorialCardsSection: React.FC = () => {
     <section className="w-full py-24 lg:py-28 bg-[#F4EBE1] text-[#382C26] font-satoshi relative border-t border-[#D9C7A7]/50 transition-colors duration-500">
       <div className="max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16">
         {/* SECTION HEADER */}
-        <div className="text-center max-w-2xl mx-auto mb-14">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="text-center max-w-2xl mx-auto mb-14"
+        >
           <span className="text-[11px] font-medium tracking-[0.3em] uppercase text-[#7D2130] bg-[#F5EFE7] px-4 py-1.5 rounded-full border border-[#D9C7A7] inline-block mb-3 shadow-xs">
             EDITORIAL INSIGHTS
           </span>
@@ -147,7 +153,7 @@ export const EditorialCardsSection: React.FC = () => {
           <p className="font-sans text-sm text-[#736357] mt-2 font-normal leading-relaxed">
             Explore curated offers, fabric craftsmanship, regional origins, and fabric care secrets.
           </p>
-        </div>
+        </motion.div>
 
         {/* FIVE EDITORIAL CARDS IN ONE RESPONSIVE ROW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 lg:gap-6 items-stretch">

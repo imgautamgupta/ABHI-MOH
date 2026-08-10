@@ -46,7 +46,8 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
           id="info-name"
           type="text"
           required
-          placeholder="Princess Gayatri Devi"
+          autoComplete="name"
+          placeholder="Your full name"
           value={data.fullName}
           onChange={(e) => onChange({ ...data, fullName: e.target.value })}
           className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"
@@ -62,7 +63,8 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
           id="info-phone"
           type="tel"
           required
-          placeholder="+91 98765 43210"
+          autoComplete="tel"
+          placeholder="+91 XXXXX XXXXX"
           value={data.phoneNumber}
           onChange={(e) => onChange({ ...data, phoneNumber: e.target.value })}
           className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"
@@ -78,7 +80,8 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
           id="info-email"
           type="email"
           required
-          placeholder="concierge@abhi-moh.com"
+          autoComplete="email"
+          placeholder="your@email.com"
           value={data.email}
           onChange={(e) => onChange({ ...data, email: e.target.value })}
           className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HANGER_SWAY_VARIANTS, IMAGE_CROSS_FADE } from './hanging-card.animations';
 import { ImageNavigator } from './ImageNavigator';
 import { FavoriteButton } from './FavoriteButton';
 import { Badge } from './Badge';
@@ -11,6 +10,7 @@ import { BadgeType } from './hanging-card.types';
 import { cn } from '@/lib/utils';
 
 export interface ProductImageProps {
+  productId?: string;
   images: string[];
   title: string;
   badges?: BadgeType[];
@@ -20,6 +20,7 @@ export interface ProductImageProps {
 }
 
 export const ProductImage: React.FC<ProductImageProps> = ({
+  productId,
   images,
   title,
   badges,
@@ -28,69 +29,86 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   className,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
-  const handlePrev = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (currentImageIndex > 0) {
       setCurrentImageIndex((prev) => prev - 1);
     }
   };
 
-  const handleNext = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (currentImageIndex < images.length - 1) {
       setCurrentImageIndex((prev) => prev + 1);
     }
+  };
+
+  // Touch handlers for mobile swipe
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX === null) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+
+    if (diff > 40 && currentImageIndex < images.length - 1) {
+      handleNext();
+    } else if (diff < -40 && currentImageIndex > 0) {
+      handlePrev();
+    }
+    setTouchStartX(null);
   };
 
   const activeImage = images[currentImageIndex] || images[0];
 
   return (
     <div
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={cn(
-        'relative w-full aspect-[3/4] bg-gradient-to-b from-[#2A0E17]/80 to-[#1B0A0F]/80 rounded-md flex flex-col items-center justify-between overflow-hidden select-none border border-[#C89D5C]/25',
+        'relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-sm overflow-hidden select-none border border-[#D9C7A7]/30 group/img cursor-pointer',
         className
       )}
     >
-      {/* BADGES OVERLAY (TOP-LEFT) */}
-      <div className="absolute top-4 left-4 z-20 flex flex-col items-start gap-1.5 pointer-events-none">
-        {badges?.map((b) => (
+      {/* EDITORIAL BADGES (TOP-LEFT) — MAX 2 VISIBLE */}
+      <div className="absolute top-3 left-3 z-20 flex flex-wrap items-start gap-1.5 pointer-events-none">
+        {badges?.slice(0, 2).map((b) => (
           <Badge key={b} label={b} />
         ))}
       </div>
 
       {/* FAVORITE BUTTON OVERLAY (TOP-RIGHT) */}
-      <div className="absolute top-4 right-4 z-20">
-        <FavoriteButton initialIsFavorite={isFavorite} onToggle={onFavoriteToggle} />
+      <div className="absolute top-3 right-3 z-20">
+        <FavoriteButton productId={productId} initialIsFavorite={isFavorite} onToggle={onFavoriteToggle} />
       </div>
 
-      {/* SUBTLE SLEEK METALLIC ANCHOR LINE (MINIMAL BOUTIQUE PRESENTATION) */}
-      <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#C89D5C]/40 to-transparent mt-4 z-10 pointer-events-none" />
-
-      {/* DRAPED FOLDED SAREE IMAGE CONTAINER WITH 300ms PURE CROSS-FADE */}
-      <div className="relative w-full flex-grow flex items-center justify-center z-0 px-6 pb-2">
+      {/* PRODUCT IMAGE WITH SUBTLE ZOOM HOVER */}
+      <div className="relative w-full h-full flex items-center justify-center p-3">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeImage}
-            variants={IMAGE_CROSS_FADE}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className="relative w-full h-full max-h-[380px] sm:max-h-[440px]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="relative w-full h-full overflow-hidden"
           >
             <Image
               src={activeImage}
               alt={title}
               fill
-              priority
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="object-contain object-top drop-shadow-[0_16px_32px_rgba(0,0,0,0.65)] pointer-events-none"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-contain object-center transition-transform duration-700 ease-out group-hover/img:scale-[1.03]"
             />
           </motion.div>
         </AnimatePresence>
       </div>
 
-      {/* IMAGE FADE NAVIGATOR (HOVER OVERLAY) */}
+      {/* DESKTOP HOVER CAROUSEL ARROWS */}
       <ImageNavigator
         onPrev={handlePrev}
         onNext={handleNext}
@@ -98,10 +116,23 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         hasNext={currentImageIndex < images.length - 1}
       />
 
-      {/* SUBTLE FLOATING FLOOR SHADOW */}
-      <div className="absolute bottom-0 inset-x-4 h-6 bg-[radial-gradient(ellipse_at_center,rgba(31,26,23,0.12)_0%,transparent_75%)] pointer-events-none z-10 group-hover:scale-105 transition-transform duration-500" />
+      {/* CAROUSEL DOT INDICATORS */}
+      {images.length > 1 && (
+        <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1 z-20 pointer-events-none opacity-0 group-hover/img:opacity-100 transition-opacity duration-300">
+          {images.map((_, idx) => (
+            <div
+              key={idx}
+              className={cn(
+                'w-1.5 h-1.5 rounded-full transition-all duration-300',
+                idx === currentImageIndex ? 'bg-[#7D2130] w-3' : 'bg-[#736357]/40'
+              )}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 ProductImage.displayName = 'ProductImage';
+

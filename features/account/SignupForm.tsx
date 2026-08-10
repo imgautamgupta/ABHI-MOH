@@ -15,7 +15,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccessSignup, classNa
   const [step, setStep] = useState<'request' | 'verify'>('request');
   const [fullName, setFullName] = useState('');
   const [mobileNumber, setMobileNumber] = useState('');
-  const [otp, setOtp] = useState('8888');
+  const [otp, setOtp] = useState('');
 
   const handleRequestOtp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +70,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccessSignup, classNa
                 type="tel"
                 required
                 maxLength={10}
-                placeholder="98765 43210"
+                placeholder="10-digit mobile number"
                 value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
                 className="w-full bg-[#250D14] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] pl-12 pr-4 py-3 rounded-md outline-none transition-colors duration-200"

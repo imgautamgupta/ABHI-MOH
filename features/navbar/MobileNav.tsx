@@ -13,11 +13,15 @@ import {
 import { DRAWER_OVERLAY_VARIANTS, DRAWER_PANEL_VARIANTS } from './navbar.animations';
 
 import { useCart } from '@/features/cart/CartContext';
+import { useFavorites } from '@/features/favorites/FavoritesContext';
+
+import Image from 'next/image';
 
 export const MobileNav: React.FC = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const { toggleCart, totalItemCount } = useCart();
+  const { totalFavoriteCount } = useFavorites();
 
   // Prevent background scroll when drawer is open
   useEffect(() => {
@@ -33,40 +37,49 @@ export const MobileNav: React.FC = () => {
 
   return (
     <div className="flex md:hidden items-center justify-between w-full h-[72px] px-5 font-satoshi relative z-40">
-      {/* LEFT: Hamburger Menu Trigger */}
-      <IconButton
-        ariaLabel="Open Menu"
-        onClick={() => setIsDrawerOpen(true)}
-      >
-        <Menu className="w-[22px] h-[22px] text-primary-text" />
-      </IconButton>
-
-      {/* CENTER: ABHI-MOH Wordmark */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <Link href="/" className="focus:outline-none" aria-label="ABHI-MOH Home">
+      {/* LEFT: AM MONOGRAM PNG + HTML SERIF WORDMARK */}
+      <div className="flex items-center">
+        <Link href="/" className="flex items-center gap-2.5 focus:outline-none select-none" aria-label="ABHI-MOH Home">
+          <Image
+            src="/assets/LOGO.png"
+            alt="ABHI-MOH Monogram"
+            width={90}
+            height={45}
+            className="object-contain h-[38px] sm:h-[42px] w-auto"
+            priority
+          />
           <span
-            className="font-hero text-xl font-[500] tracking-[0.2em] uppercase block"
-            style={{ color: BRAND_MAROON }}
+            className="font-hero text-lg sm:text-xl font-[500] tracking-[0.2em] uppercase text-[#7A1C28]"
           >
             ABHI-MOH
           </span>
         </Link>
       </div>
 
-      {/* RIGHT: User Icon & Shopping Bag */}
-      <div className="flex items-center gap-2">
-        <Link href="/account/signin" aria-label="User Account">
-          <IconButton ariaLabel="User Account">
-            <User className="w-[20px] h-[20px] text-primary-text" />
+      {/* RIGHT: Favorites, Cart & Hamburger Trigger */}
+      <div className="flex items-center gap-1.5">
+        <Link href="/favorites" aria-label="Favorites">
+          <IconButton
+            ariaLabel="Favorites"
+            showBadge={totalFavoriteCount > 0}
+            badgeCount={totalFavoriteCount}
+          >
+            <Heart className="w-[20px] h-[20px] text-primary-text" />
           </IconButton>
         </Link>
         <IconButton
           ariaLabel="Shopping Bag"
-          showBadge
+          showBadge={totalItemCount > 0}
           badgeCount={totalItemCount}
           onClick={toggleCart}
         >
           <ShoppingBag className="w-[20px] h-[20px] text-primary-text" />
+        </IconButton>
+        <IconButton
+          ariaLabel="Open Menu"
+          onClick={() => setIsDrawerOpen(true)}
+        >
+          <Menu className="w-[22px] h-[22px] text-primary-text" />
         </IconButton>
       </div>
 
@@ -94,12 +107,18 @@ export const MobileNav: React.FC = () => {
             >
               {/* Header inside drawer */}
               <div className="flex items-center justify-between pb-6 border-b border-[#E8DFD5]">
-                <span
-                  className="font-hero text-lg font-medium tracking-[0.2em] uppercase"
-                  style={{ color: BRAND_MAROON }}
-                >
-                  ABHI-MOH
-                </span>
+                <Link href="/" onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-2.5">
+                  <Image
+                    src="/assets/LOGO.png"
+                    alt="ABHI-MOH Monogram"
+                    width={80}
+                    height={40}
+                    className="object-contain h-[38px] w-auto"
+                  />
+                  <span className="font-hero text-lg font-medium tracking-[0.2em] uppercase text-[#7A1C28]">
+                    ABHI-MOH
+                  </span>
+                </Link>
                 <IconButton
                   ariaLabel="Close Menu"
                   onClick={() => setIsDrawerOpen(false)}

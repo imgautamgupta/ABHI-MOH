@@ -7,9 +7,29 @@ import { SORT_OPTIONS, COLLECTIONS_COPY } from './collections.constants';
 import { SortOption } from './collections.types';
 import { cn } from '@/lib/utils';
 
-export const SortDropdown: React.FC = () => {
+export interface SortDropdownProps {
+  selectedOption?: SortOption;
+  onSelectOption?: (option: SortOption) => void;
+}
+
+export const SortDropdown: React.FC<SortDropdownProps> = ({
+  selectedOption: controlledOption,
+  onSelectOption,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<SortOption>(SORT_OPTIONS[0]);
+  const [internalOption, setInternalOption] = useState<SortOption>(SORT_OPTIONS[0]);
+
+  const selectedOption = controlledOption || internalOption;
+
+  const handleSelect = (option: SortOption) => {
+    if (onSelectOption) {
+      onSelectOption(option);
+    } else {
+      setInternalOption(option);
+    }
+    setIsOpen(false);
+  };
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Click outside and Escape listener
@@ -43,30 +63,30 @@ export const SortDropdown: React.FC = () => {
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="inline-flex items-center gap-3 px-5 py-2.5 bg-[#250D14]/80 border border-[#C89D5C]/35 hover:border-[#C89D5C]/70 text-xs uppercase tracking-[0.2em] text-[#F6ECE1] hover:text-[#E5C388] transition-all duration-300 ease-silk rounded-md focus:outline-none focus-visible:ring-1 focus-visible:ring-[#C89D5C]/50 select-none cursor-pointer shadow-md"
+        className="inline-flex items-center gap-2.5 px-4 py-2 bg-[#FAF7F2] border border-[#D9C7A7]/60 hover:border-[#7D2130]/50 text-xs uppercase tracking-[0.18em] text-[#382C26] hover:text-[#7D2130] transition-all duration-300 rounded-sm focus:outline-none focus-visible:ring-1 focus-visible:ring-[#7D2130]/50 select-none cursor-pointer"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label="Sort Collections"
       >
-        <span className="text-[#D0BEAB] font-light">{COLLECTIONS_COPY.sortByDefault}:</span>
-        <span className="font-medium text-[#E5C388]">{selectedOption.label}</span>
+        <span className="text-[#736357] font-light">{COLLECTIONS_COPY.sortByDefault}:</span>
+        <span className="font-medium text-[#7D2130]">{selectedOption.label}</span>
         <ChevronDown
           className={cn(
-            'w-4 h-4 text-[#D0BEAB] transition-transform duration-300 ease-silk',
-            isOpen && 'rotate-180 text-[#E5C388]'
+            'w-3.5 h-3.5 text-[#736357] transition-transform duration-300',
+            isOpen && 'rotate-180 text-[#7D2130]'
           )}
         />
       </button>
 
-      {/* FLOATING DARK GLASS DROPDOWN */}
+      {/* FLOATING LIGHT GLASS DROPDOWN */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: -4 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: -4 }}
-            transition={{ duration: 0.25, ease: [0.25, 1, 0.5, 1] }}
-            className="absolute right-0 mt-2 w-64 bg-[#1C0A10]/95 backdrop-blur-[24px] border border-[#C89D5C]/35 shadow-2xl rounded-md p-1.5 z-50 overflow-hidden"
+            transition={{ duration: 0.2, ease: [0.25, 1, 0.5, 1] }}
+            className="absolute right-0 mt-2 w-56 bg-[#FAF7F2]/95 backdrop-blur-[24px] border border-[#D9C7A7] shadow-xl rounded-sm p-1 z-50 overflow-hidden"
             role="listbox"
           >
             <div className="flex flex-col py-1">
@@ -78,17 +98,14 @@ export const SortDropdown: React.FC = () => {
                     type="button"
                     role="option"
                     aria-selected={isSelected}
-                    onClick={() => {
-                      setSelectedOption(option);
-                      setIsOpen(false);
-                    }}
+                    onClick={() => handleSelect(option)}
                     className={cn(
-                      'flex items-center justify-between px-4 py-2.5 text-xs uppercase tracking-wider font-light text-[#F6ECE1]/85 hover:text-[#E5C388] hover:bg-[#C89D5C]/10 transition-colors duration-200 rounded-sm text-left',
-                      isSelected && 'text-[#E5C388] font-medium bg-[#C89D5C]/15'
+                      'flex items-center justify-between px-3.5 py-2 text-xs uppercase tracking-wider font-light text-[#736357] hover:text-[#7D2130] hover:bg-[#EADFCF]/50 transition-colors duration-200 rounded-xs text-left',
+                      isSelected && 'text-[#7D2130] font-medium bg-[#EADFCF]/60'
                     )}
                   >
                     <span>{option.label}</span>
-                    {isSelected && <Check className="w-3.5 h-3.5 text-[#E5C388]" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 text-[#7D2130]" />}
                   </button>
                 );
               })}
@@ -101,3 +118,4 @@ export const SortDropdown: React.FC = () => {
 };
 
 SortDropdown.displayName = 'SortDropdown';
+

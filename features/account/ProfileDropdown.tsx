@@ -13,21 +13,22 @@ export interface ProfileDropdownProps {
   className?: string;
 }
 
-const DEFAULT_USER: UserProfile = {
-  name: 'Princess Gayatri Devi',
-  email: 'gayatri@abhi-moh.com',
-  avatarMonogram: 'AM',
+const GUEST_USER: UserProfile = {
+  name: 'Guest',
+  email: '',
+  avatarMonogram: 'G',
 };
 
 export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
-  user = DEFAULT_USER,
+  user,
   onLogout,
   onClose,
   className,
 }) => {
+  const activeUser = user ?? GUEST_USER;
   const menuItems = [
-    { label: 'Orders', href: '/account/orders', icon: Package, badge: 2 },
-    { label: 'Wishlist', href: '/account/wishlist', icon: Heart, badge: 5 },
+    { label: 'Orders', href: '/account/orders', icon: Package },
+    { label: 'Wishlist', href: '/account/wishlist', icon: Heart },
     { label: 'Addresses', href: '/account/addresses', icon: MapPin },
     { label: 'Profile', href: '/account/profile', icon: User },
   ];
@@ -38,16 +39,18 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
       <div className="flex items-center gap-4 pb-5 border-b border-white/[0.08]">
         {/* Monogram Avatar Badge */}
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#5E0006] to-[#2D0003] border border-warm-cream/30 flex items-center justify-center text-warm-cream font-hero text-sm font-medium tracking-widest shadow-md flex-shrink-0">
-          {user.avatarMonogram}
+          {activeUser.avatarMonogram}
         </div>
 
         <div className="flex flex-col overflow-hidden">
           <span className="font-hero text-base font-[500] text-[#EED9B9] truncate">
-            {user.name}
+            {activeUser.name}
           </span>
-          <span className="font-sans text-[11px] font-light text-secondary-text truncate">
-            {user.email}
-          </span>
+          {activeUser.email && (
+            <span className="font-sans text-[11px] font-light text-secondary-text truncate">
+              {activeUser.email}
+            </span>
+          )}
         </div>
       </div>
 
@@ -66,11 +69,6 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
                 <Icon className="w-4 h-4 text-secondary-text" />
                 {item.label}
               </span>
-              {item.badge !== undefined && (
-                <span className="px-2 py-0.5 rounded-full bg-[#5E0006]/60 text-warm-cream text-[10px]">
-                  {item.badge}
-                </span>
-              )}
             </Link>
           );
         })}

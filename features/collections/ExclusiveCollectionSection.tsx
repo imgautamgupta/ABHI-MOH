@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Heart, ShoppingBag, Check } from 'lucide-react';
 import { useCart } from '@/features/cart/CartContext';
+import { useFavorites } from '@/features/favorites/FavoritesContext';
 
 export interface CuratedSaree {
   id: string;
@@ -102,11 +103,10 @@ const EXCLUSIVE_SAREES: CuratedSaree[] = [
 
 export const ExclusiveCollectionSection: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
-  const [wishlist, setWishlist] = useState<Record<string, boolean>>({});
   const [addedItems, setAddedItems] = useState<Record<string, boolean>>({});
-  // Per-card active image index state
   const [cardImageIndexes, setCardImageIndexes] = useState<Record<string, number>>({});
   const { addToCart } = useCart();
+  const { isFavorite, toggleFavorite } = useFavorites();
 
   const scrollCarousel = (direction: 'left' | 'right') => {
     if (carouselRef.current) {
@@ -120,10 +120,7 @@ export const ExclusiveCollectionSection: React.FC = () => {
 
   const toggleWishlist = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setWishlist((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
+    toggleFavorite(id);
   };
 
   const handlePrevImage = (id: string, totalImages: number, e: React.MouseEvent) => {
@@ -174,7 +171,12 @@ export const ExclusiveCollectionSection: React.FC = () => {
       <div className="max-w-[1920px] mx-auto px-6 sm:px-10 lg:px-16 relative z-10">
         {/* SECTION HEADER BAR */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+          >
             <span className="text-[11px] font-medium tracking-[0.28em] uppercase text-[#7D2130] bg-[#F5EFE7] px-4 py-1.5 rounded-full border border-[#D9C7A7] inline-block mb-3 shadow-xs">
               CURATED HAUTE COUTURE
             </span>
@@ -184,7 +186,7 @@ export const ExclusiveCollectionSection: React.FC = () => {
             <p className="font-sans text-sm text-[#736357] mt-2 max-w-lg font-normal leading-relaxed">
               Explore six master handloom creations draped in pure silk, antique gold zari, and timeless craftsmanship.
             </p>
-          </div>
+          </motion.div>
 
           {/* Carousel Nav Controls */}
           <div className="flex items-center gap-3">
@@ -214,18 +216,22 @@ export const ExclusiveCollectionSection: React.FC = () => {
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {EXCLUSIVE_SAREES.map((saree) => {
-            const isLiked = !!wishlist[saree.id];
+            const isLiked = isFavorite(saree.id);
             const isAdded = !!addedItems[saree.id];
             const currentImgIndex = cardImageIndexes[saree.id] || 0;
             const activeImage = saree.images[currentImgIndex];
 
             return (
-              <div
+              <motion.div
                 key={saree.id}
-                className="group snap-start flex-none w-[300px] sm:w-[350px] md:w-[380px] bg-[#F5EFE7] border border-[#D9C7A7] rounded-[22px] p-5 shadow-xs hover:-translate-y-1.5 hover:shadow-2xl transition-all duration-500 flex flex-col justify-between select-none relative"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="group snap-start flex-none w-[300px] sm:w-[350px] md:w-[380px] bg-[#F5EFE7] border border-[#D9C7A7] rounded-[22px] p-5 luxury-glow-hover hover:-translate-y-1.5 transition-all duration-500 flex flex-col justify-between select-none relative"
               >
-                {/* IMAGE CONTAINER WITH HOVER ARROW BUTTONS */}
-                <div className="relative w-full h-[370px] sm:h-[420px] rounded-[16px] overflow-hidden bg-[#EADFCF] mb-5 group/image">
+                {/* IMAGE CONTAINER WITH GOLDEN SHIMMER */}
+                <div className="shimmer-on-hover relative w-full h-[370px] sm:h-[420px] rounded-[16px] overflow-hidden bg-[#EADFCF] mb-5 group/image">
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={activeImage}
@@ -338,7 +344,7 @@ export const ExclusiveCollectionSection: React.FC = () => {
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

@@ -1,14 +1,43 @@
 'use client';
 
-import React, { createContext, useContext, useState, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
 import { CartItemModel, CartContextType } from './cart.types';
 import { INITIAL_CART_ITEMS } from './cart.constants';
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const CART_STORAGE_KEY = 'abhimoh_cart_items';
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [items, setItems] = useState<CartItemModel[]>(INITIAL_CART_ITEMS);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load cart from localStorage on client mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(CART_STORAGE_KEY);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to load cart items from localStorage', e);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // Save cart to localStorage whenever items state changes
+  useEffect(() => {
+    if (!isLoaded) return;
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch (e) {
+      console.warn('Failed to save cart items to localStorage', e);
+    }
+  }, [items, isLoaded]);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);

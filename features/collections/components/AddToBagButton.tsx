@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Check } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface AddToBagButtonProps {
@@ -24,30 +24,33 @@ export const AddToBagButton: React.FC<AddToBagButtonProps> = ({ onAdd, className
   };
 
   return (
-    <motion.button
+    <button
       type="button"
-      whileTap={{ scale: 0.98 }}
       onClick={handleClick}
       className={cn(
-        'w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#F6ECE1] border border-[#C89D5C]/35 hover:border-[#C89D5C]/70 font-satoshi font-medium text-xs uppercase tracking-[0.2em] transition-all duration-500 ease-silk flex items-center justify-center gap-2 select-none cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#C89D5C]/50 shadow-md hover:shadow-lg transform translate-y-3 opacity-80 group-hover:translate-y-0 group-hover:opacity-100',
-        isAdded && 'bg-emerald-950 text-emerald-100 border-emerald-500/50 hover:bg-emerald-900 opacity-100 translate-y-0',
+        'group/btn relative w-full py-2.5 px-4 rounded-xs border border-[#7D2130]/30 hover:border-[#7D2130] text-[#7D2130] hover:text-[#FAF7F2] font-satoshi font-medium text-[11px] uppercase tracking-[0.2em] transition-all duration-400 overflow-hidden flex items-center justify-between select-none cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-[#7D2130]',
+        isAdded && 'bg-emerald-800 text-emerald-50 border-emerald-700 hover:bg-emerald-700 hover:text-white',
         className
       )}
       aria-label="Add To Bag"
     >
+      {/* Gentle expanding burgundy background on hover */}
+      <span className="absolute inset-0 bg-[#7D2130] translate-y-full group-hover/btn:translate-y-0 transition-transform duration-400 ease-out -z-10" />
+
       {isAdded ? (
-        <>
-          <Check className="w-4 h-4 text-emerald-300" />
+        <span className="flex items-center justify-between w-full text-emerald-100 font-medium">
           <span>Added To Bag</span>
-        </>
+          <Check className="w-3.5 h-3.5 text-emerald-200" />
+        </span>
       ) : (
-        <>
-          <ShoppingBag className="w-3.5 h-3.5 text-[#E5C388]" />
+        <span className="flex items-center justify-between w-full relative z-10">
           <span>Add To Bag</span>
-        </>
+          <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" />
+        </span>
       )}
-    </motion.button>
+    </button>
   );
 };
 
 AddToBagButton.displayName = 'AddToBagButton';
+

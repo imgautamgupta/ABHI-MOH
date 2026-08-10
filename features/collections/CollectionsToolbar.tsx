@@ -11,10 +11,10 @@ export const CollectionsToolbar: React.FC = () => {
       initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 1, 0.5, 1] }}
-      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-6 border-b border-[#C89D5C]/25 mb-14 font-satoshi"
+      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 py-6 border-b border-[#D9C7A7]/50 mb-14 font-satoshi"
     >
       {/* LEFT: Result Count */}
-      <span className="text-xs uppercase tracking-[0.25em] text-[#D0BEAB] font-light">
+      <span className="text-xs uppercase tracking-[0.25em] text-[#736357] font-light">
         {COLLECTIONS_COPY.resultCount}
       </span>
 

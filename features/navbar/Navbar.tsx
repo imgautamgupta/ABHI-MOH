@@ -61,10 +61,7 @@ export const Navbar: React.FC = () => {
     <header
       ref={headerRef}
       className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-silk select-none',
-        isScrolled
-          ? 'bg-[#FAF7F2]/90 backdrop-blur-[20px] border-b border-[#E8DFD5] shadow-xs text-[#2A221E]'
-          : 'bg-transparent border-b border-transparent text-[#2A221E]'
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-silk select-none bg-[#FAF7F2]/90 backdrop-blur-[20px] border-b border-[#E8DFD5]/80 shadow-xs text-[#2A221E]'
       )}
     >
       <DesktopNav />

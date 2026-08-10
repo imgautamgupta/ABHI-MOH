@@ -13,9 +13,9 @@ export interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccessLogin, className }) => {
   const [step, setStep] = useState<'request' | 'verify'>('request');
-  const [name, setName] = useState('Princess Gayatri Devi');
-  const [mobileNumber, setMobileNumber] = useState('9876543210');
-  const [otp, setOtp] = useState('8888');
+  const [name, setName] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
+  const [otp, setOtp] = useState('');
 
   const handleRequestOtp = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +70,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccessLogin, className 
                 type="tel"
                 required
                 maxLength={10}
-                placeholder="98765 43210"
+                placeholder="10-digit mobile number"
                 value={mobileNumber}
                 onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, ''))}
                 className="w-full bg-[#250D14] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] pl-12 pr-4 py-3 rounded-md outline-none transition-colors duration-200"

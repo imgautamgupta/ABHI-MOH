@@ -10,49 +10,68 @@ import { SearchBar } from './SearchBar';
 import { AccountDropdown } from './AccountDropdown';
 
 import { useCart } from '@/features/cart/CartContext';
+import { useFavorites } from '@/features/favorites/FavoritesContext';
+
+import Image from 'next/image';
 
 export const DesktopNav: React.FC = () => {
   const { toggleCart, totalItemCount } = useCart();
+  const { totalFavoriteCount } = useFavorites();
 
   return (
-    <div className="relative hidden md:flex items-center justify-between w-full h-[80px] lg:h-[88px] px-8 lg:px-16 max-w-[1920px] mx-auto font-satoshi">
-      {/* LEFT: Collections, Lookbook, Our Story */}
-      <nav className="flex items-center gap-8 lg:gap-12 z-10" aria-label="Desktop Navigation">
-        {DESKTOP_LEFT_LINKS.map((item) => (
-          <NavLink key={item.label} href={item.href} label={item.label} />
-        ))}
-      </nav>
-
-      {/* CENTER: ABHI-MOH Wordmark (Absolute Center Anchor) */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-auto text-center">
+    <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full h-[88px] lg:h-[96px] px-8 lg:px-16 max-w-[1920px] mx-auto font-satoshi">
+      {/* LEFT: BRAND MONOGRAM PNG + HTML HIGH-CONTRAST SERIF WORDMARK */}
+      <div className="flex items-center justify-start z-10 max-w-[280px]">
         <Link
           href="/"
-          className="group inline-block focus:outline-none"
+          className="flex items-center gap-3.5 group focus:outline-none select-none"
           aria-label="ABHI-MOH Home"
         >
+          {/* Official AM Monogram Asset (Dominant, 52-58px height) */}
+          <Image
+            src="/assets/LOGO.png"
+            alt="ABHI-MOH Monogram"
+            width={120}
+            height={60}
+            className="object-contain h-[52px] lg:h-[58px] w-auto transition-transform duration-300 ease-silk group-hover:scale-[1.03]"
+            priority
+          />
+          {/* Refined HTML Bodoni Moda Serif Brand Name */}
           <span
-            className="font-hero text-2xl lg:text-3xl font-[500] tracking-[0.22em] uppercase transition-opacity duration-300 group-hover:opacity-90 block"
-            style={{ color: BRAND_MAROON }}
+            className="font-hero text-xl lg:text-2xl font-[500] tracking-[0.22em] uppercase text-[#7A1C28] transition-opacity duration-300 group-hover:opacity-90 whitespace-nowrap"
           >
             ABHI-MOH
           </span>
         </Link>
       </div>
 
-      {/* RIGHT: Search, Favorites, Shopping Bag, User Account */}
-      <div className="flex items-center gap-5 lg:gap-7 z-10">
+      {/* CENTER: NAVIGATION LINKS (COLLECTIONS, LOOKBOOK, OUR STORY) */}
+      <nav className="flex items-center justify-center gap-8 lg:gap-12 z-10" aria-label="Desktop Navigation">
+        {DESKTOP_LEFT_LINKS.map((item) => (
+          <NavLink key={item.label} href={item.href} label={item.label} />
+        ))}
+      </nav>
+
+      {/* RIGHT: ACTION ICONS (SEARCH, FAVORITES, BAG, ACCOUNT) */}
+      <div className="flex items-center justify-end gap-5 lg:gap-7 z-10">
         {/* Animated Expanding Search */}
         <SearchBar />
 
-        {/* Favorites Icon */}
-        <IconButton ariaLabel="Favorites">
-          <Heart className="w-[20px] h-[20px] text-primary-text" />
-        </IconButton>
+        {/* Favorites Icon with Badge */}
+        <Link href="/favorites" aria-label="Favorites">
+          <IconButton
+            ariaLabel="Favorites"
+            showBadge={totalFavoriteCount > 0}
+            badgeCount={totalFavoriteCount}
+          >
+            <Heart className="w-[20px] h-[20px] text-primary-text" />
+          </IconButton>
+        </Link>
 
         {/* Shopping Bag Icon with Dynamic Cart Badge Count */}
         <IconButton
           ariaLabel="Shopping Bag"
-          showBadge
+          showBadge={totalItemCount > 0}
           badgeCount={totalItemCount}
           onClick={toggleCart}
         >

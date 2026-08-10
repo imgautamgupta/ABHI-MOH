@@ -6,14 +6,11 @@ export const DESKTOP_LEFT_LINKS: NavItem[] = [
   { label: 'Our Story', href: '/our-story' },
 ];
 
-
-
 export const MOBILE_DRAWER_LINKS: NavItem[] = [
   { label: 'Collections', href: '/collections' },
   { label: 'Lookbook', href: '/lookbook' },
   { label: 'Our Story', href: '/our-story' },
   { label: 'Favorites', href: '/favorites' },
-  { label: 'Search', href: '#search' },
   { label: 'Account', href: '/account' },
 ];
 

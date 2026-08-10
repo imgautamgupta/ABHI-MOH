@@ -19,14 +19,14 @@ import Image from 'next/image';
 // Stagger variants for drawer nav items
 const DRAWER_ITEM_CONTAINER_VARIANTS: Variants = {
   hidden: {},
-  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.1 } },
+  visible: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } },
   exit: {},
 };
 
 const DRAWER_ITEM_VARIANTS: Variants = {
-  hidden: { opacity: 0, y: 14 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
-  exit:   { opacity: 0, y: -8,  transition: { duration: 0.2 } },
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: 'easeOut' } },
+  exit:   { opacity: 0, y: -4,  transition: { duration: 0.15 } },
 };
 
 export const MobileNav: React.FC = () => {
@@ -39,24 +39,30 @@ export const MobileNav: React.FC = () => {
   useEffect(() => {
     if (isDrawerOpen) {
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
     } else {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
     }
     return () => {
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.touchAction = '';
     };
   }, [isDrawerOpen]);
 
   return (
     /*
-     * 3-column grid layout:
+     * 3-column grid layout on top mobile header:
      *   col 1 (auto): hamburger button — always LEFT
      *   col 2 (1fr):  brand centered in its column — appears CENTERED in viewport
      *   col 3 (auto): action icons — always RIGHT
      *
      * Hidden at md+ (DesktopNav takes over at md)
      */
-    <div className="md:hidden grid grid-cols-[auto_1fr_auto] items-center w-full h-[64px] sm:h-[68px] px-3 sm:px-5 font-satoshi relative z-40">
+    <div className="md:hidden grid grid-cols-[auto_1fr_auto] items-center w-full h-[60px] sm:h-[68px] px-3 sm:px-5 font-satoshi relative z-40">
 
       {/* ══ LEFT COLUMN: Hamburger ══ */}
       <div className="flex items-center justify-start">
@@ -81,7 +87,7 @@ export const MobileNav: React.FC = () => {
             alt="ABHI-MOH Monogram"
             width={90}
             height={45}
-            className="object-contain h-[30px] min-[380px]:h-[34px] sm:h-[38px] w-auto flex-shrink-0"
+            className="object-contain h-[28px] min-[380px]:h-[32px] sm:h-[38px] w-auto flex-shrink-0"
             priority
           />
           {/* Brand name — compact on tiny screens */}
@@ -98,7 +104,7 @@ export const MobileNav: React.FC = () => {
         <div className="hidden min-[380px]:flex">
           <IconButton
             ariaLabel="Search"
-            onClick={() => { setIsSearchActive(true); setIsDrawerOpen(true); }}
+            onClick={() => { setIsSearchActive((prev) => !prev); }}
           >
             <Search className="w-[18px] h-[18px] text-primary-text" />
           </IconButton>
@@ -137,34 +143,54 @@ export const MobileNav: React.FC = () => {
         </div>
       </div>
 
-      {/* ══ FULL-SCREEN NAVIGATION DRAWER ══ */}
+      {/* Search Input Bar (Dropdown below navbar when active) */}
+      <AnimatePresence>
+        {isSearchActive && (
+          <motion.div
+            key="search-bar-mobile"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-full left-0 right-0 p-3 bg-[#FAF7F2] border-b border-[#E8DFD5] shadow-md z-30"
+          >
+            <input
+              type="text"
+              placeholder="Search Sarees..."
+              className="w-full bg-[#FFFDFC] text-[#2A221E] border border-[#E8DFD5] px-4 py-2 text-xs tracking-wider uppercase rounded-lg outline-none focus:border-[#7A1C28]"
+              autoFocus
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ══ FULL-HEIGHT MOBILE NAVIGATION DRAWER ══ */}
       <AnimatePresence>
         {isDrawerOpen && (
-          <div className="fixed inset-0 z-50 flex">
-            {/* Backdrop Overlay */}
+          <div className="fixed inset-0 z-50 overflow-hidden select-none">
+            {/* Backdrop Overlay (Dark Blur Overlay covering full viewport) */}
             <motion.div
               variants={DRAWER_OVERLAY_VARIANTS}
               initial="hidden"
               animate="visible"
               exit="exit"
-              onClick={() => { setIsDrawerOpen(false); setIsSearchActive(false); }}
-              className="fixed inset-0 bg-background-primary/80 backdrop-blur-md"
+              onClick={() => setIsDrawerOpen(false)}
+              className="fixed inset-0 bg-[#190A0C]/45 backdrop-blur-md z-40"
             />
 
-            {/* Slide-in Drawer Panel */}
+            {/* Slide-in Full-Height Mobile Navigation Panel (top:0, 100dvh, NO internal scrollbar) */}
             <motion.div
               variants={DRAWER_PANEL_VARIANTS}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="relative w-full max-w-sm h-full bg-[#FAF7F2] border-r border-[#E8DFD5] p-6 sm:p-8 flex flex-col justify-between z-10 font-satoshi shadow-xl overflow-y-auto text-[#2A221E]"
+              className="fixed top-0 left-0 z-50 w-[88vw] min-[400px]:w-[350px] max-w-[90vw] h-[100dvh] bg-[#FAF7F2] border-r border-[#E8DFD5] px-5 sm:px-7 py-3 sm:py-5 flex flex-col justify-between font-satoshi shadow-2xl overflow-hidden text-[#2A221E]"
             >
-              {/* Drawer Header */}
-              <div className="flex items-center justify-between pb-5 border-b border-[#E8DFD5]">
+              {/* Drawer Header (starts at top:0) */}
+              <div className="flex items-center justify-between h-[60px] sm:h-[72px] pb-2 border-b border-[#E8DFD5] flex-shrink-0">
                 <Link
                   href="/"
-                  onClick={() => { setIsDrawerOpen(false); setIsSearchActive(false); }}
-                  className="flex items-center gap-2.5"
+                  onClick={() => setIsDrawerOpen(false)}
+                  className="flex items-center gap-2"
                   aria-label="ABHI-MOH Home"
                 >
                   <Image
@@ -172,97 +198,60 @@ export const MobileNav: React.FC = () => {
                     alt="ABHI-MOH Monogram"
                     width={80}
                     height={40}
-                    className="object-contain h-[36px] w-auto"
+                    className="object-contain h-[32px] sm:h-[38px] w-auto"
                   />
-                  <span className="font-hero text-base font-medium tracking-[0.2em] uppercase text-[#7A1C28]">
+                  <span className="font-hero text-base sm:text-lg font-medium tracking-[0.18em] uppercase text-[#7A1C28]">
                     ABHI-MOH
                   </span>
                 </Link>
                 <IconButton
                   ariaLabel="Close Menu"
-                  onClick={() => { setIsDrawerOpen(false); setIsSearchActive(false); }}
+                  onClick={() => setIsDrawerOpen(false)}
                 >
                   <X className="w-5 h-5 text-[#2A221E]" />
                 </IconButton>
               </div>
 
-              {/* Search Field — shown when search icon tapped */}
-              <AnimatePresence>
-                {isSearchActive && (
-                  <motion.div
-                    key="search-field"
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-4">
-                      <input
-                        type="text"
-                        placeholder="Search Sarees..."
-                        className="w-full bg-[#FFFDFC] text-[#2A221E] border border-[#E8DFD5] px-4 py-3 text-xs tracking-wider uppercase rounded-lg outline-none focus:border-[#7A1C28] transition-colors duration-200"
-                        autoFocus
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Navigation Items with stagger animation */}
+              {/* Navigation Items (01 COLLECTIONS, 02 LOOKBOOK, 03 OUR STORY, 04 FAVORITES, 05 ACCOUNT) */}
               <motion.nav
                 variants={DRAWER_ITEM_CONTAINER_VARIANTS}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="flex flex-col gap-0 py-6 flex-1"
+                className="flex flex-col justify-center gap-1 sm:gap-2 flex-1 my-1 overflow-hidden"
                 aria-label="Mobile Navigation"
               >
                 {MOBILE_DRAWER_LINKS.map((item, index) => (
-                  <motion.div key={item.label} variants={DRAWER_ITEM_VARIANTS}>
-                    {item.label === 'Search' ? (
-                      /* Search item — toggle search field */
-                      <button
-                        type="button"
-                        onClick={() => setIsSearchActive((prev) => !prev)}
-                        className="flex items-center gap-3 w-full py-4 border-b border-[#E8DFD5]/60 text-base font-light uppercase tracking-[0.18em] text-[#2A221E] hover:text-[#7A1C28] transition-colors duration-200 text-left"
-                      >
-                        <span className="text-[10px] font-medium text-[#C9A96E] tracking-widest w-5 text-right">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        <Search className="w-4 h-4 text-[#7A1C28]" />
-                        Search
-                      </button>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        onClick={() => { setIsDrawerOpen(false); setIsSearchActive(false); }}
-                        className="flex items-center gap-3 w-full py-4 border-b border-[#E8DFD5]/60 text-base font-light uppercase tracking-[0.18em] text-[#2A221E] hover:text-[#7A1C28] transition-colors duration-300"
-                      >
-                        <span className="text-[10px] font-medium text-[#C9A96E] tracking-widest w-5 text-right">
-                          {String(index + 1).padStart(2, '0')}
-                        </span>
-                        {item.label === 'Favorites' && <Heart className="w-4 h-4 text-[#7A1C28]" />}
-                        {item.label === 'Account'   && <User className="w-4 h-4 text-[#7A1C28]" />}
-                        {item.label}
-                      </Link>
-                    )}
+                  <motion.div key={item.label} variants={DRAWER_ITEM_VARIANTS} className="w-full">
+                    <Link
+                      href={item.href}
+                      onClick={() => setIsDrawerOpen(false)}
+                      className="flex items-center gap-3 w-full py-2 sm:py-3 border-b border-[#E8DFD5]/40 text-sm sm:text-base font-light uppercase tracking-[0.16em] text-[#2A221E] hover:text-[#7A1C28] transition-colors duration-300"
+                    >
+                      <span className="text-[11px] font-medium text-[#C9A96E] tracking-widest w-5 text-right flex-shrink-0">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      {item.label === 'Favorites' && <Heart className="w-3.5 h-3.5 text-[#7A1C28] flex-shrink-0" />}
+                      {item.label === 'Account'   && <User className="w-3.5 h-3.5 text-[#7A1C28] flex-shrink-0" />}
+                      <span className="truncate">{item.label}</span>
+                    </Link>
                   </motion.div>
                 ))}
               </motion.nav>
 
-              {/* Bottom: Socials & Concierge */}
-              <div className="pt-5 border-t border-[#E8DFD5] flex flex-col gap-4">
-                <span className="text-[10px] uppercase tracking-[0.25em] text-[#6E645A]/80 font-light">
+              {/* Bottom Socials & Maison Concierge Footer */}
+              <div className="pt-2 sm:pt-3 border-t border-[#E8DFD5] flex flex-col gap-1.5 flex-shrink-0">
+                <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-[#6E645A]/80 font-light">
                   Maison Concierge
                 </span>
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-4 sm:gap-6">
                   {MOBILE_SOCIAL_LINKS.map((social) => (
                     <a
                       key={social.label}
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-xs uppercase tracking-widest text-[#6E645A] hover:text-[#7A1C28] transition-colors duration-300"
+                      className="text-[11px] sm:text-xs uppercase tracking-widest text-[#6E645A] hover:text-[#7A1C28] transition-colors duration-300"
                     >
                       {social.label}
                     </a>

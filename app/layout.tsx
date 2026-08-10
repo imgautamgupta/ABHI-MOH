@@ -45,6 +45,11 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: '/images/abhi-moh-monogram.png',
+    shortcut: '/images/abhi-moh-monogram.png',
+    apple: '/images/abhi-moh-monogram.png',
+  },
   twitter: {
     card: 'summary_large_image',
     title: `${SITE_METADATA.name} | ${SITE_METADATA.tagline}`,

@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Heart, ShoppingBag } from 'lucide-react';
-import { DESKTOP_LEFT_LINKS, BRAND_MAROON } from './navbar.constants';
+import { DESKTOP_LEFT_LINKS } from './navbar.constants';
 import { NavLink } from './NavLink';
 import { IconButton } from './IconButton';
 import { SearchBar } from './SearchBar';
@@ -19,41 +19,44 @@ export const DesktopNav: React.FC = () => {
   const { totalFavoriteCount } = useFavorites();
 
   return (
-    <div className="grid grid-cols-[1fr_auto_1fr] items-center w-full h-[88px] lg:h-[96px] px-8 lg:px-16 max-w-[1920px] mx-auto font-satoshi">
-      {/* LEFT: BRAND MONOGRAM PNG + HTML HIGH-CONTRAST SERIF WORDMARK */}
-      <div className="flex items-center justify-start z-10 max-w-[280px]">
+    /* hidden on mobile, grid on md+ so it never fights with MobileNav */
+    <div className="hidden md:grid grid-cols-[1fr_auto_1fr] items-center w-full h-[80px] lg:h-[88px] xl:h-[96px] px-6 lg:px-10 xl:px-16 max-w-[1920px] mx-auto font-satoshi">
+
+      {/* LEFT: BRAND MONOGRAM + WORDMARK — min-w-0 allows flex-shrink */}
+      <div className="flex items-center justify-start z-10 min-w-0">
         <Link
           href="/"
-          className="flex items-center gap-3.5 group focus:outline-none select-none"
+          className="flex items-center gap-2 md:gap-2.5 lg:gap-3.5 group focus:outline-none select-none min-w-0"
           aria-label="ABHI-MOH Home"
         >
-          {/* Official AM Monogram Asset (Dominant, 52-58px height) */}
+          {/* Monogram — scales across breakpoints */}
           <Image
             src="/images/abhi-moh-monogram.png"
             alt="ABHI-MOH Monogram"
             width={120}
             height={60}
-            className="object-contain h-[52px] lg:h-[58px] w-auto transition-transform duration-300 ease-silk group-hover:scale-[1.03]"
+            className="object-contain h-[36px] md:h-[42px] lg:h-[50px] xl:h-[56px] w-auto flex-shrink-0 transition-transform duration-300 ease-silk group-hover:scale-[1.03]"
             priority
           />
-          {/* Refined HTML Bodoni Moda Serif Brand Name */}
-          <span
-            className="font-hero text-xl lg:text-2xl font-[500] tracking-[0.22em] uppercase text-[#7A1C28] transition-opacity duration-300 group-hover:opacity-90 whitespace-nowrap"
-          >
+          {/* Brand name — responsive text size */}
+          <span className="font-hero text-[11px] md:text-sm lg:text-base xl:text-xl font-[500] tracking-[0.18em] md:tracking-[0.2em] xl:tracking-[0.22em] uppercase text-[#7A1C28] transition-opacity duration-300 group-hover:opacity-90 whitespace-nowrap truncate">
             ABHI-MOH
           </span>
         </Link>
       </div>
 
-      {/* CENTER: NAVIGATION LINKS (COLLECTIONS, LOOKBOOK, OUR STORY) */}
-      <nav className="flex items-center justify-center gap-8 lg:gap-12 z-10" aria-label="Desktop Navigation">
+      {/* CENTER: NAV LINKS — tighter gaps at md, expands at lg/xl */}
+      <nav
+        className="flex items-center justify-center gap-5 md:gap-6 lg:gap-9 xl:gap-12 z-10 px-2"
+        aria-label="Desktop Navigation"
+      >
         {DESKTOP_LEFT_LINKS.map((item) => (
           <NavLink key={item.label} href={item.href} label={item.label} />
         ))}
       </nav>
 
-      {/* RIGHT: ACTION ICONS (SEARCH, FAVORITES, BAG, ACCOUNT) */}
-      <div className="flex items-center justify-end gap-5 lg:gap-7 z-10">
+      {/* RIGHT: ACTION ICONS — min-w-0 allows flex-shrink */}
+      <div className="flex items-center justify-end gap-3 md:gap-4 lg:gap-5 xl:gap-7 z-10 min-w-0">
         {/* Animated Expanding Search */}
         <SearchBar />
 
@@ -64,7 +67,7 @@ export const DesktopNav: React.FC = () => {
             showBadge={totalFavoriteCount > 0}
             badgeCount={totalFavoriteCount}
           >
-            <Heart className="w-[20px] h-[20px] text-primary-text" />
+            <Heart className="w-[18px] h-[18px] lg:w-[20px] lg:h-[20px] text-primary-text" />
           </IconButton>
         </Link>
 
@@ -75,7 +78,7 @@ export const DesktopNav: React.FC = () => {
           badgeCount={totalItemCount}
           onClick={toggleCart}
         >
-          <ShoppingBag className="w-[20px] h-[20px] text-primary-text" />
+          <ShoppingBag className="w-[18px] h-[18px] lg:w-[20px] lg:h-[20px] text-primary-text" />
         </IconButton>
 
         {/* User Account Icon Dropdown */}

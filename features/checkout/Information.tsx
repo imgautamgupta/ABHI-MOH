@@ -26,20 +26,21 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
       animate="animate"
       exit="exit"
       onSubmit={handleSubmit}
-      className={cn('flex flex-col gap-6 font-satoshi text-xs text-left w-full', className)}
+      className={cn('flex flex-col gap-6 font-satoshi text-left w-full', className)}
     >
-      <div className="flex flex-col gap-1 border-b border-[#C89D5C]/25 pb-3">
-        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#E5C388]">
-          Step 1: Contact Information
+      {/* Step Header */}
+      <div className="flex flex-col gap-1 border-b border-[#E8DFD5] pb-4">
+        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#2A221E]">
+          Contact Information
         </h3>
-        <p className="font-sans text-xs font-light text-[#D0BEAB]">
+        <p className="text-xs font-light text-[#736357]">
           Enter your details for order confirmation and concierge tracking.
         </p>
       </div>
 
-      {/* Full Name Input */}
+      {/* Full Name */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="info-name" className="uppercase tracking-[0.18em] text-[#D0BEAB]/90 text-[10px]">
+        <label htmlFor="info-name" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
           Full Name *
         </label>
         <input
@@ -47,33 +48,33 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
           type="text"
           required
           autoComplete="name"
-          placeholder="Your full name"
+          placeholder="Enter your full name"
           value={data.fullName}
           onChange={(e) => onChange({ ...data, fullName: e.target.value })}
-          className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"
+          className="w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-sm"
         />
       </div>
 
-      {/* Phone Number Input */}
+      {/* Phone Number */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="info-phone" className="uppercase tracking-[0.18em] text-[#D0BEAB]/90 text-[10px]">
-          Phone Number (for Courier Updates) *
+        <label htmlFor="info-phone" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
+          Phone Number *
         </label>
         <input
           id="info-phone"
           type="tel"
           required
           autoComplete="tel"
-          placeholder="+91 XXXXX XXXXX"
+          placeholder="Enter your 10-digit mobile number"
           value={data.phoneNumber}
           onChange={(e) => onChange({ ...data, phoneNumber: e.target.value })}
-          className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"
+          className="w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-sm"
         />
       </div>
 
-      {/* Email Input */}
+      {/* Email Address */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="info-email" className="uppercase tracking-[0.18em] text-[#D0BEAB]/90 text-[10px]">
+        <label htmlFor="info-email" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
           Email Address *
         </label>
         <input
@@ -81,17 +82,17 @@ export const Information: React.FC<InformationProps> = ({ data, onChange, onNext
           type="email"
           required
           autoComplete="email"
-          placeholder="your@email.com"
+          placeholder="Enter your email address"
           value={data.email}
           onChange={(e) => onChange({ ...data, email: e.target.value })}
-          className="w-full bg-[#1F0A10] border border-[#C89D5C]/30 focus:border-[#C89D5C] text-[#F6ECE1] px-4 py-3 rounded-md outline-none transition-colors duration-200"
+          className="w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-sm"
         />
       </div>
 
-      {/* Next Step Button */}
+      {/* Continue Button */}
       <button
         type="submit"
-        className="w-full py-4 mt-4 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#F6ECE1] border border-[#C89D5C]/35 hover:border-[#C89D5C]/70 font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 ease-silk shadow-lg hover:shadow-xl cursor-pointer focus:outline-none"
+        className="w-full py-4 mt-2 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#FAF7F2] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-[1px] cursor-pointer focus:outline-none"
       >
         Continue To Delivery
       </button>

@@ -14,6 +14,7 @@ export const MOBILE_DRAWER_LINKS: NavItem[] = [
   { label: 'Our Story', href: '/our-story' },
   { label: 'Favorites', href: '/favorites' },
   { label: 'Search', href: '#search' },
+  { label: 'Account', href: '/account' },
 ];
 
 export const MOBILE_SOCIAL_LINKS: SocialLink[] = [

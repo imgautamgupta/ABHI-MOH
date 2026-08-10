@@ -19,7 +19,7 @@ export const RibbonSelector: React.FC<RibbonSelectorProps> = ({
 }) => {
   return (
     <div className={cn('flex flex-col gap-2 font-satoshi text-xs text-left w-full', className)}>
-      <span className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
+      <span className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
         Select Silk Ribbon Color
       </span>
 
@@ -32,21 +32,21 @@ export const RibbonSelector: React.FC<RibbonSelectorProps> = ({
               type="button"
               onClick={() => onSelectRibbon(ribbon)}
               className={cn(
-                'flex items-center gap-2.5 p-2.5 rounded-sm bg-[#181818] border transition-all duration-300 select-none cursor-pointer text-left',
+                'flex items-center gap-2.5 p-3 rounded-xl border transition-all duration-300 select-none cursor-pointer text-left',
                 isSelected
-                  ? 'border-[#5E0006] bg-[#5E0006]/10 ring-1 ring-[#5E0006]'
-                  : 'border-borders hover:border-warm-cream/40'
+                  ? 'border-[#7A1C28] bg-[#7A1C28]/5 ring-1 ring-[#7A1C28]/20'
+                  : 'border-[#E8DFD5] bg-[#FAF7F2] hover:border-[#D9C7A7] hover:bg-white'
               )}
             >
               {/* Color Swatch Circle */}
               <div
-                className="w-5 h-5 rounded-full border border-white/20 flex items-center justify-center flex-shrink-0 shadow-sm"
+                className="w-5 h-5 rounded-full border border-black/10 flex items-center justify-center flex-shrink-0 shadow-xs"
                 style={{ backgroundColor: ribbon.hex }}
               >
-                {isSelected && <Check className="w-3 h-3 text-white drop-shadow" />}
+                {isSelected && <Check className="w-3 h-3 text-white drop-shadow-sm" />}
               </div>
 
-              <span className="text-[11px] font-medium text-warm-cream uppercase tracking-wider truncate">
+              <span className="text-[11px] font-medium text-[#2A221E] uppercase tracking-wider truncate">
                 {ribbon.label}
               </span>
             </button>

@@ -15,6 +15,9 @@ export interface DeliveryProps {
   className?: string;
 }
 
+const inputClass =
+  'w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-sm';
+
 export const Delivery: React.FC<DeliveryProps> = ({
   data,
   onChange,
@@ -34,38 +37,39 @@ export const Delivery: React.FC<DeliveryProps> = ({
       animate="animate"
       exit="exit"
       onSubmit={handleSubmit}
-      className={cn('flex flex-col gap-6 font-satoshi text-xs text-left w-full', className)}
+      className={cn('flex flex-col gap-6 font-satoshi text-left w-full', className)}
     >
-      <div className="flex flex-col gap-1 border-b border-white/[0.08] pb-3">
-        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#5E0006]">
-          Step 2: Shipping Address & Delivery Option
+      {/* Step Header */}
+      <div className="flex flex-col gap-1 border-b border-[#E8DFD5] pb-4">
+        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#2A221E]">
+          Shipping Address &amp; Delivery
         </h3>
-        <p className="font-sans text-xs font-light text-secondary-text">
+        <p className="text-xs font-light text-[#736357]">
           Specify your delivery address and choose standard or bespoke gift packaging.
         </p>
       </div>
 
-      {/* Address Input */}
+      {/* Street Address */}
       <div className="flex flex-col gap-1.5">
-        <label htmlFor="del-address" className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
-          Street Address / Suite *
+        <label htmlFor="del-address" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
+          Street Address *
         </label>
         <textarea
           id="del-address"
           required
           rows={3}
           autoComplete="street-address"
-          placeholder="Street address, building, suite, etc."
+          placeholder="Enter your complete address"
           value={data.address}
           onChange={(e) => onChange({ ...data, address: e.target.value })}
-          className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none transition-colors duration-200 resize-none"
+          className="w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 resize-none text-sm"
         />
       </div>
 
       {/* City, State & Pincode */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="del-city" className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
+          <label htmlFor="del-city" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
             City *
           </label>
           <input
@@ -73,15 +77,15 @@ export const Delivery: React.FC<DeliveryProps> = ({
             type="text"
             required
             autoComplete="address-level2"
-            placeholder="City"
+            placeholder="Enter city"
             value={data.city}
             onChange={(e) => onChange({ ...data, city: e.target.value })}
-            className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
+            className={inputClass}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="del-state" className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
+          <label htmlFor="del-state" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
             State *
           </label>
           <input
@@ -89,15 +93,15 @@ export const Delivery: React.FC<DeliveryProps> = ({
             type="text"
             required
             autoComplete="address-level1"
-            placeholder="State"
+            placeholder="Enter state"
             value={data.state}
             onChange={(e) => onChange({ ...data, state: e.target.value })}
-            className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
+            className={inputClass}
           />
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="del-pincode" className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
+          <label htmlFor="del-pincode" className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
             Pincode *
           </label>
           <input
@@ -106,59 +110,65 @@ export const Delivery: React.FC<DeliveryProps> = ({
             required
             autoComplete="postal-code"
             maxLength={6}
-            placeholder="6-digit pincode"
+            placeholder="Enter pincode"
             value={data.pincode}
             onChange={(e) => onChange({ ...data, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-            className="w-full bg-[#181818] border border-borders focus:border-warm-cream/70 text-primary-text px-4 py-3 rounded-sm outline-none"
+            className={inputClass}
           />
         </div>
       </div>
 
-      {/* DELIVERY MODE SELECTION CARDS */}
-      <div className="flex flex-col gap-3 pt-2">
-        <span className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
-          Delivery Experience Mode *
+      {/* Delivery Mode Cards */}
+      <div className="flex flex-col gap-3 pt-1">
+        <span className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
+          Delivery Experience *
         </span>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Normal Delivery */}
           <div
+            role="button"
+            tabIndex={0}
             onClick={() => onChange({ ...data, deliveryMode: 'normal' })}
+            onKeyDown={(e) => e.key === 'Enter' && onChange({ ...data, deliveryMode: 'normal' })}
             className={cn(
-              'p-4 rounded-sm border bg-[#181818] flex items-start gap-3 cursor-pointer transition-all duration-300 select-none',
+              'p-5 rounded-xl border flex items-start gap-3 cursor-pointer transition-all duration-300 select-none',
               data.deliveryMode === 'normal'
-                ? 'border-[#5E0006] bg-[#5E0006]/10 shadow-sm'
-                : 'border-borders hover:border-warm-cream/40'
+                ? 'border-[#7A1C28] bg-[#7A1C28]/5 shadow-sm ring-1 ring-[#7A1C28]/20'
+                : 'border-[#E8DFD5] bg-[#FAF7F2] hover:border-[#D9C7A7]'
             )}
           >
-            <PackageCheck className="w-5 h-5 text-warm-cream mt-0.5 flex-shrink-0" />
-            <div className="flex flex-col gap-0.5 text-left">
-              <span className="font-medium text-warm-cream uppercase tracking-wider text-xs">
+            <PackageCheck className={cn('w-5 h-5 mt-0.5 flex-shrink-0', data.deliveryMode === 'normal' ? 'text-[#7A1C28]' : 'text-[#C9A96E]')} />
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-[#2A221E] uppercase tracking-wider text-xs">
                 Normal Delivery
               </span>
-              <span className="text-[11px] text-secondary-text font-light leading-relaxed">
-                Signature ABHI-MOH boutique garment bag & box.
+              <span className="text-[11px] text-[#736357] font-light leading-relaxed">
+                Signature ABHI-MOH boutique garment bag &amp; box.
               </span>
             </div>
           </div>
 
           {/* Gift Delivery */}
           <div
+            role="button"
+            tabIndex={0}
             onClick={() => onChange({ ...data, deliveryMode: 'gift' })}
+            onKeyDown={(e) => e.key === 'Enter' && onChange({ ...data, deliveryMode: 'gift' })}
             className={cn(
-              'p-4 rounded-sm border bg-[#181818] flex items-start gap-3 cursor-pointer transition-all duration-300 select-none',
+              'p-5 rounded-xl border flex items-start gap-3 cursor-pointer transition-all duration-300 select-none',
               data.deliveryMode === 'gift'
-                ? 'border-[#5E0006] bg-[#5E0006]/10 shadow-sm'
-                : 'border-borders hover:border-warm-cream/40'
+                ? 'border-[#7A1C28] bg-[#7A1C28]/5 shadow-sm ring-1 ring-[#7A1C28]/20'
+                : 'border-[#E8DFD5] bg-[#FAF7F2] hover:border-[#D9C7A7]'
             )}
           >
-            <Gift className="w-5 h-5 text-[#EED9B9] mt-0.5 flex-shrink-0" />
-            <div className="flex flex-col gap-0.5 text-left">
-              <span className="font-medium text-warm-cream uppercase tracking-wider text-xs">
+            <Gift className={cn('w-5 h-5 mt-0.5 flex-shrink-0', data.deliveryMode === 'gift' ? 'text-[#7A1C28]' : 'text-[#C9A96E]')} />
+            <div className="flex flex-col gap-0.5">
+              <span className="font-medium text-[#2A221E] uppercase tracking-wider text-xs">
                 Gift Delivery
               </span>
-              <span className="text-[11px] text-secondary-text font-light leading-relaxed">
-                Unlocks luxury gift box cards, ribbon swatches & gift message.
+              <span className="text-[11px] text-[#736357] font-light leading-relaxed">
+                Unlocks luxury gift box cards, ribbon swatches &amp; gift message.
               </span>
             </div>
           </div>
@@ -166,18 +176,17 @@ export const Delivery: React.FC<DeliveryProps> = ({
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between gap-4 mt-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2">
         <button
           type="button"
           onClick={onBack}
-          className="py-3.5 px-6 rounded-full border border-borders hover:border-warm-cream/50 text-secondary-text hover:text-warm-cream text-xs uppercase tracking-[0.18em] transition-colors cursor-pointer"
+          className="sm:w-auto px-7 py-4 rounded-full border border-[#D9C7A7] hover:border-[#7A1C28] text-[#736357] hover:text-[#7A1C28] text-xs uppercase tracking-[0.18em] transition-colors cursor-pointer"
         >
           Back
         </button>
-
         <button
           type="submit"
-          className="flex-1 py-4 rounded-full bg-[#5E0006] hover:bg-[#9B0F06] text-warm-cream font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 ease-silk shadow-medium hover:-translate-y-[2px] cursor-pointer"
+          className="flex-1 py-4 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#FAF7F2] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-[1px] cursor-pointer"
         >
           {data.deliveryMode === 'gift' ? 'Continue To Gift Experience' : 'Continue To Review'}
         </button>

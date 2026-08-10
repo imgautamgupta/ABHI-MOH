@@ -37,20 +37,21 @@ export const GiftExperience: React.FC<GiftExperienceProps> = ({
       animate="animate"
       exit="exit"
       onSubmit={handleSubmit}
-      className={cn('flex flex-col gap-6 font-satoshi text-xs text-left w-full', className)}
+      className={cn('flex flex-col gap-6 font-satoshi text-left w-full', className)}
     >
-      <div className="flex flex-col gap-1 border-b border-white/[0.08] pb-3">
-        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#5E0006]">
-          Step 3: Bespoke Gift Packaging & Presentation
+      {/* Step Header */}
+      <div className="flex flex-col gap-1 border-b border-[#E8DFD5] pb-4">
+        <h3 className="font-hero text-xl font-[500] uppercase tracking-[0.16em] text-[#2A221E]">
+          Bespoke Gift Packaging
         </h3>
-        <p className="font-sans text-xs font-light text-secondary-text">
+        <p className="text-xs font-light text-[#736357]">
           Select a signature box, satin ribbon color, and personalize your gift message.
         </p>
       </div>
 
-      {/* 1. GIFT BOX CARDS GRID */}
+      {/* 1. GIFT BOX SELECTION */}
       <div className="flex flex-col gap-2">
-        <span className="uppercase tracking-[0.18em] text-secondary-text/80 text-[10px]">
+        <span className="uppercase tracking-[0.18em] text-[#736357] text-[10px] font-medium">
           Select Packaging Box *
         </span>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -71,25 +72,24 @@ export const GiftExperience: React.FC<GiftExperienceProps> = ({
         onSelectRibbon={(ribbon) => onChange({ ...data, selectedRibbonId: ribbon.id })}
       />
 
-      {/* 3. GIFT MESSAGE INPUT */}
+      {/* 3. GIFT MESSAGE */}
       <GiftMessage
         message={data.giftMessage}
         onChange={(msg) => onChange({ ...data, giftMessage: msg })}
       />
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between gap-4 mt-4">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-2">
         <button
           type="button"
           onClick={onBack}
-          className="py-3.5 px-6 rounded-full border border-borders hover:border-warm-cream/50 text-secondary-text hover:text-warm-cream text-xs uppercase tracking-[0.18em] transition-colors cursor-pointer"
+          className="sm:w-auto px-7 py-4 rounded-full border border-[#D9C7A7] hover:border-[#7A1C28] text-[#736357] hover:text-[#7A1C28] text-xs uppercase tracking-[0.18em] transition-colors cursor-pointer"
         >
           Back
         </button>
-
         <button
           type="submit"
-          className="flex-1 py-4 rounded-full bg-[#5E0006] hover:bg-[#9B0F06] text-warm-cream font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 ease-silk shadow-medium hover:-translate-y-[2px] cursor-pointer"
+          className="flex-1 py-4 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#FAF7F2] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-[1px] cursor-pointer"
         >
           Continue To Review
         </button>

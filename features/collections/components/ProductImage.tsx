@@ -70,7 +70,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       className={cn(
-        'relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-sm overflow-hidden select-none border border-[#D9C7A7]/30 group/img cursor-pointer',
+        'relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-[24px]  overflow-hidden select-none border border-[#D9C7A7]/30 group/img cursor-pointer',
         className
       )}
     >

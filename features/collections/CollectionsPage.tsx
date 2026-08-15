@@ -1,21 +1,58 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from "react";
 import { motion } from 'framer-motion';
-import { HANGING_CARD_DATASET } from './components/hanging-card.constants';
 import { HeroSilkCanvas } from './components/HeroSilkCanvas';
 import { CollectionsFilterBar, CategoryFilter } from './CollectionsFilterBar';
 import { CollectionsGrid } from './CollectionsGrid';
 import { SORT_OPTIONS } from './collections.constants';
 import { SortOption } from './collections.types';
+import type { SareeProduct } from './components/hanging-card.types';
 
 export const CollectionsPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
   const [selectedSort, setSelectedSort] = useState<SortOption>(SORT_OPTIONS[0]);
+  const [products, setProducts] = useState<SareeProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Dynamic category filtering & sorting logic
+  // ── Fetch products from Wix via our API route ────────────────────────────
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch('/api/products');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.products as SareeProduct[]);
+        } else {
+          setError(data.error ?? 'Failed to fetch products.');
+        }
+      } catch (err) {
+        console.error('[CollectionsPage] Error fetching products:', err);
+        setError('Unable to load our saree collection right now. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
+
+  // ── Category filtering + sorting ─────────────────────────────────────────
   const filteredProducts = useMemo(() => {
-    let result = [...HANGING_CARD_DATASET];
+    let result = [...products]; // ← live Wix products, not static mock
+
+    // Out-of-stock products appear last
+    result.sort((a, b) => {
+      const aInStock = a.inStock !== false;
+      const bInStock = b.inStock !== false;
+      if (aInStock === bInStock) return 0;
+      return aInStock ? -1 : 1;
+    });
 
     // Category filter
     if (activeCategory !== 'ALL') {
@@ -25,29 +62,54 @@ export const CollectionsPage: React.FC = () => {
         if (activeCategory === 'HANDWOVEN' && p.badges?.includes('Handwoven')) return true;
         if (activeCategory === 'LIMITED EDITION' && p.badges?.includes('Limited Edition')) return true;
         if (activeCategory === 'SILK' && p.material.toLowerCase().includes('silk')) return true;
-        if (activeCategory === 'ZARI' && (p.material.toLowerCase().includes('zari') || p.name.toLowerCase().includes('zari') || p.name.toLowerCase().includes('gold'))) return true;
-        if (activeCategory === 'FESTIVE' && (p.badges?.includes('Royal Heritage') || p.badges?.includes('Masterpiece') || p.badges?.includes('Handwoven'))) return true;
+        if (activeCategory === 'ZARI' && (
+          p.material.toLowerCase().includes('zari') ||
+          p.name.toLowerCase().includes('zari') ||
+          p.name.toLowerCase().includes('gold')
+        )) return true;
+        if (activeCategory === 'FESTIVE' && (
+          p.badges?.includes('Royal Heritage') ||
+          p.badges?.includes('Masterpiece') ||
+          p.badges?.includes('Handwoven')
+        )) return true;
         return false;
       });
     }
 
     // Sort order
-    if (selectedSort.id === 'price-low') {
+    if (selectedSort.id === 'price-asc') {
       result.sort((a, b) => (a.priceNumber || 0) - (b.priceNumber || 0));
-    } else if (selectedSort.id === 'price-high') {
+    } else if (selectedSort.id === 'price-desc') {
       result.sort((a, b) => (b.priceNumber || 0) - (a.priceNumber || 0));
     } else if (selectedSort.id === 'newest') {
       result.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    } else if (selectedSort.id === 'alphabetical') {
+      result.sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return result;
-  }, [activeCategory, selectedSort]);
+  }, [activeCategory, selectedSort, products]);
+
+  // ── Loading skeleton ─────────────────────────────────────────────────────
+  const LoadingSkeleton = () => (
+    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start">
+      {Array.from({ length: 8 }).map((_, i) => (
+        <div key={i} className="w-full flex flex-col gap-3 animate-pulse">
+          <div className="w-full aspect-[3/4] bg-[#E8DFD5]/60 rounded-sm" />
+          <div className="h-4 bg-[#E8DFD5]/60 rounded w-3/4" />
+          <div className="h-3 bg-[#E8DFD5]/40 rounded w-1/2" />
+          <div className="h-3 bg-[#E8DFD5]/60 rounded w-1/3" />
+          <div className="h-9 bg-[#E8DFD5]/40 rounded-xs mt-1" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div className="relative w-full bg-[#FAF7F2] text-[#382C26] min-h-screen pt-[100px] lg:pt-[130px] pb-32 px-5 sm:px-10 lg:px-16 max-w-[1800px] mx-auto font-satoshi overflow-hidden">
-      
+
       {/* Subtle Parchment Texture & Radial Warm Light Layers */}
-      <div 
+      <div
         className="absolute inset-0 z-0 pointer-events-none opacity-25 mix-blend-multiply"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
@@ -60,7 +122,7 @@ export const CollectionsPage: React.FC = () => {
       <HeroSilkCanvas />
 
       <div className="relative z-10">
-        
+
         {/* EDITORIAL HERO SECTION */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
@@ -80,17 +142,45 @@ export const CollectionsPage: React.FC = () => {
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#7D2130]/40 to-transparent mt-6" />
         </motion.div>
 
-        {/* MODERN FASHION FILTER BAR (Categories Left + Sort Right) */}
+        {/* MODERN FASHION FILTER BAR */}
         <CollectionsFilterBar
           activeCategory={activeCategory}
           onSelectCategory={setActiveCategory}
           selectedSort={selectedSort}
           onSelectSort={setSelectedSort}
-          itemCount={filteredProducts.length}
+          itemCount={loading ? 0 : filteredProducts.length}
         />
 
-        {/* EDITORIAL PRODUCT GRID (4-COL DESKTOP, 2-COL MOBILE) */}
-        <CollectionsGrid products={filteredProducts} />
+        {/* CONTENT STATES */}
+        {loading && <LoadingSkeleton />}
+
+        {!loading && error && (
+          <div className="w-full py-20 flex flex-col items-center justify-center text-center font-satoshi">
+            <p className="font-hero text-2xl text-[#7D2130] mb-2">Something Went Wrong</p>
+            <p className="text-xs uppercase tracking-widest text-[#736357] max-w-md">{error}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="mt-6 px-6 py-2.5 border border-[#7D2130]/40 text-[#7D2130] text-xs uppercase tracking-widest hover:bg-[#7D2130] hover:text-white transition-colors rounded-xs cursor-pointer"
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && products.length === 0 && (
+          <div className="w-full py-20 flex flex-col items-center justify-center text-center font-satoshi">
+            <p className="font-hero text-2xl text-[#382C26] mb-2">Collection Coming Soon</p>
+            <p className="text-xs uppercase tracking-widest text-[#736357]">
+              Our curated sarees are being prepared. Please check back shortly.
+            </p>
+          </div>
+        )}
+
+        {/* EDITORIAL PRODUCT GRID */}
+        {!loading && !error && products.length > 0 && (
+          <CollectionsGrid products={filteredProducts} />
+        )}
 
       </div>
     </div>
@@ -98,4 +188,3 @@ export const CollectionsPage: React.FC = () => {
 };
 
 CollectionsPage.displayName = 'CollectionsPage';
-

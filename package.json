@@ -13,6 +13,7 @@
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@types/three": "^0.185.4",
+    "@wix/members": "^1.0.500",
     "@wix/sdk": "^1.21.14",
     "@wix/stores": "^1.0.856",
     "class-variance-authority": "^0.7.1",

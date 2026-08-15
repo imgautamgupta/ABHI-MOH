@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { SareeProduct } from './components/hanging-card.types';
+import { AnimatePresence } from 'framer-motion';
+import type { SareeProduct } from './components/hanging-card.types';
 import { HangingCard } from './components/HangingCard';
 
 export interface CollectionsGridProps {
@@ -33,4 +33,3 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ products }) =>
 };
 
 CollectionsGrid.displayName = 'CollectionsGrid';
-

@@ -4,6 +4,7 @@ import { SITE_METADATA } from '@/lib/constants';
 import { Navbar } from '@/features/navbar/Navbar';
 import { Footer } from '@/features/footer/Footer';
 import { SmoothScroll } from '@/components/common/SmoothScroll';
+import { AuthProvider } from '@/features/account/AuthContext';
 import { CartProvider } from '@/features/cart/CartContext';
 import { FavoritesProvider } from '@/features/favorites/FavoritesContext';
 import { SideCart } from '@/features/cart/SideCart';
@@ -70,16 +71,18 @@ export default function RootLayout({
       style={{ colorScheme: 'light' }}
     >
       <body className="font-sans antialiased bg-[#FAF7F2] text-[#2A221E]">
-        <CartProvider>
-          <FavoritesProvider>
-            <SmoothScroll>
-              <Navbar />
-              {children}
-              <Footer />
-              <SideCart />
-            </SmoothScroll>
-          </FavoritesProvider>
-        </CartProvider>
+        <AuthProvider>
+          <CartProvider>
+            <FavoritesProvider>
+              <SmoothScroll>
+                <Navbar />
+                {children}
+                <Footer />
+                <SideCart />
+              </SmoothScroll>
+            </FavoritesProvider>
+          </CartProvider>
+        </AuthProvider>
       </body>
     </html>
   );

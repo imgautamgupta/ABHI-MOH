@@ -10,7 +10,9 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleLogout(request: NextRequest) {
-  const origin = new URL(request.url).origin;
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
+  const proto = request.headers.get('x-forwarded-proto') || (request.url.startsWith('https') ? 'https' : 'http');
+  const origin = `${proto}://${host}`;
   const isJsonRequested = request.headers.get('accept')?.includes('application/json');
 
   const tokensCookie = request.cookies.get(WIX_TOKENS_COOKIE)?.value;

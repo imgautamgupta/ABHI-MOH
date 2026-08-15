@@ -8,7 +8,9 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error');
   const errorDescription = searchParams.get('error_description');
 
-  const origin = new URL(request.url).origin;
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
+  const proto = request.headers.get('x-forwarded-proto') || (request.url.startsWith('https') ? 'https' : 'http');
+  const origin = `${proto}://${host}`;
 
   if (error) {
     console.error('Wix OAuth callback error:', error, errorDescription);

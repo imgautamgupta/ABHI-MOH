@@ -6,12 +6,10 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const returnUrl = searchParams.get('returnUrl') || '/account';
 
-    // Construct the absolute callback URL based on host/headers
-    const origin =
-      request.headers.get('origin') ||
-      request.headers.get('x-forwarded-host')
-        ? `${request.headers.get('x-forwarded-proto') || 'http'}://${request.headers.get('x-forwarded-host') || request.headers.get('host')}`
-        : new URL(request.url).origin;
+    // Construct the absolute callback URL based on host/headers (Vercel proxy compatible)
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
+    const proto = request.headers.get('x-forwarded-proto') || (request.url.startsWith('https') ? 'https' : 'http');
+    const origin = `${proto}://${host}`;
 
     const redirectUri = `${origin}/api/auth/callback`;
 

@@ -63,17 +63,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setItems((prevItems) => prevItems.filter((item) => item.id !== id));
   };
 
+  // Enforces minimum quantity of 1 (items are removed ONLY via explicit removeFromCart)
   const updateQuantity = (id: string, delta: number) => {
     setItems((prevItems) =>
-      prevItems
-        .map((item) => {
-          if (item.id === id) {
-            const nextQty = item.quantity + delta;
-            return nextQty > 0 ? { ...item, quantity: nextQty } : null;
-          }
-          return item;
-        })
-        .filter((item): item is CartItemModel => item !== null)
+      prevItems.map((item) => {
+        if (item.id === id) {
+          const nextQty = Math.max(1, item.quantity + delta);
+          return { ...item, quantity: nextQty };
+        }
+        return item;
+      })
     );
   };
 

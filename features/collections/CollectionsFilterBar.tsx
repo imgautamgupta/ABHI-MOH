@@ -41,7 +41,10 @@ export const CollectionsFilterBar: React.FC<CollectionsFilterBarProps> = ({
       className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-6 py-4 border-b border-[#D9C7A7]/40 mb-12 font-satoshi"
     >
       {/* LEFT: Category Navigation Tabs */}
-      <div className="flex items-center gap-6 sm:gap-8 overflow-x-auto no-scrollbar py-1 text-xs uppercase tracking-[0.2em]">
+      <div
+        className="flex items-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto no-scrollbar py-1 text-xs uppercase tracking-[0.16em] sm:tracking-[0.2em]"
+        style={{ touchAction: 'pan-x' }}
+      >
         {CATEGORIES.map((cat) => {
           const isActive = activeCategory === cat;
           return (
@@ -50,7 +53,7 @@ export const CollectionsFilterBar: React.FC<CollectionsFilterBarProps> = ({
               type="button"
               onClick={() => onSelectCategory(cat)}
               className={cn(
-                'relative py-2 font-medium transition-colors duration-300 whitespace-nowrap cursor-pointer select-none focus:outline-none focus-visible:text-[#7D2130]',
+                'relative py-2 font-medium transition-colors duration-300 whitespace-nowrap cursor-pointer select-none focus:outline-none focus-visible:text-[#7D2130] min-h-[44px] flex items-center',
                 isActive ? 'text-[#7D2130]' : 'text-[#736357] hover:text-[#382C26]'
               )}
             >

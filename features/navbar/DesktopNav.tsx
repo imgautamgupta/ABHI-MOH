@@ -16,7 +16,7 @@ import Image from 'next/image';
 
 export const DesktopNav: React.FC = () => {
   const { toggleCart, totalItemCount } = useCart();
-  const { totalFavoriteCount } = useFavorites();
+  const { totalFavoriteCount, isLoaded } = useFavorites();
 
   return (
     /* hidden on mobile, grid on md+ so it never fights with MobileNav */
@@ -64,7 +64,7 @@ export const DesktopNav: React.FC = () => {
         <Link href="/favorites" aria-label="Favorites">
           <IconButton
             ariaLabel="Favorites"
-            showBadge={totalFavoriteCount > 0}
+            showBadge={isLoaded && totalFavoriteCount > 0}
             badgeCount={totalFavoriteCount}
           >
             <Heart className="w-[18px] h-[18px] lg:w-[20px] lg:h-[20px] text-primary-text" />
@@ -73,7 +73,7 @@ export const DesktopNav: React.FC = () => {
 
         {/* Shopping Bag Icon with Dynamic Cart Badge Count */}
         <IconButton
-          ariaLabel="Shopping Bag"
+          ariaLabel="Shopping bag"
           showBadge={totalItemCount > 0}
           badgeCount={totalItemCount}
           onClick={toggleCart}

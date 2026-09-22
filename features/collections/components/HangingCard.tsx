@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SareeProduct } from './hanging-card.types';
+import { FavoriteItem, useFavorites } from '@/features/favorites/FavoritesContext';
 import { ProductImage } from './ProductImage';
 import { ProductInfo } from './ProductInfo';
 import { Price } from './Price';
@@ -12,7 +13,7 @@ import { cn } from '@/lib/utils';
 import { useCart } from '@/features/cart/CartContext';
 
 export interface HangingCardProps {
-  product: SareeProduct;
+  product: SareeProduct | FavoriteItem;
   onFavoriteToggle?: (id: string, isFav: boolean) => void;
   onAddToBag?: (id: string) => void;
   className?: string;
@@ -25,23 +26,25 @@ export const HangingCard: React.FC<HangingCardProps> = ({
   className,
 }) => {
   const { addToCart } = useCart();
+  const { isFavorite } = useFavorites();
 
   // inStock is undefined for static mock data → treat as in-stock
   const isInStock = product.inStock !== false;
+  const isFav = isFavorite(product.id);
 
   const handleAdd = () => {
     if (!isInStock) return;
     addToCart({
       id: product.id,
       name: product.name,
-      material: product.material,
+      material: product.material || 'Luxury Saree',
       color: 'Luxury Saree',
       priceNumber:
         product.priceNumber ||
         parseInt(product.price.replace(/[^\d]/g, ''), 10) ||
         0,
       priceFormatted: product.price,
-      imageSrc: product.images[0],
+      imageSrc: product.images[0] || '/assets/sarees/saree-maroon.png',
     });
     if (onAddToBag) onAddToBag(product.id);
   };
@@ -61,11 +64,11 @@ export const HangingCard: React.FC<HangingCardProps> = ({
         className
       )}
     >
-      {/* OUT OF STOCK OVERLAY */}
+      {/* SOLD OUT OVERLAY */}
       {!isInStock && (
         <div className="absolute top-3 inset-x-3 z-30 flex justify-center pointer-events-none">
-          <span className="bg-[#382C26]/80 text-[#FAF7F2] text-[9px] uppercase tracking-[0.25em] px-3 py-1 rounded-full">
-            Out of Stock
+          <span className="bg-[#382C26]/85 backdrop-blur-md text-[#FAF7F2] text-[9px] uppercase tracking-[0.25em] px-3.5 py-1 rounded-full shadow-xs border border-[#FAF7F2]/20">
+            Sold Out
           </span>
         </div>
       )}
@@ -75,24 +78,26 @@ export const HangingCard: React.FC<HangingCardProps> = ({
         <Link href={detailHref} aria-label={`View ${product.name}`} tabIndex={0}>
           <ProductImage
             productId={product.id}
+            product={product}
             images={product.images}
             title={product.name}
             badges={product.badges}
-            isFavorite={product.isFavorite}
-            onFavoriteToggle={(isFav) =>
-              onFavoriteToggle && onFavoriteToggle(product.id, isFav)
+            isFavorite={isFav}
+            onFavoriteToggle={(newFav) =>
+              onFavoriteToggle && onFavoriteToggle(product.id, newFav)
             }
           />
         </Link>
       ) : (
         <ProductImage
           productId={product.id}
+          product={product}
           images={product.images}
           title={product.name}
           badges={product.badges}
-          isFavorite={product.isFavorite}
-          onFavoriteToggle={(isFav) =>
-            onFavoriteToggle && onFavoriteToggle(product.id, isFav)
+          isFavorite={isFav}
+          onFavoriteToggle={(newFav) =>
+            onFavoriteToggle && onFavoriteToggle(product.id, newFav)
           }
         />
       )}
@@ -102,10 +107,10 @@ export const HangingCard: React.FC<HangingCardProps> = ({
         {/* Name links to detail page if slug available */}
         {detailHref ? (
           <Link href={detailHref} tabIndex={-1} className="hover:text-[#7D2130] transition-colors">
-            <ProductInfo name={product.name} material={product.material} />
+            <ProductInfo name={product.name} material={product.material || 'Luxury Saree'} />
           </Link>
         ) : (
-          <ProductInfo name={product.name} material={product.material} />
+          <ProductInfo name={product.name} material={product.material || 'Luxury Saree'} />
         )}
 
         <div className="flex items-center justify-between gap-2 mt-0.5">

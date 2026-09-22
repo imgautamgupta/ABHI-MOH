@@ -7,7 +7,9 @@ import { SmoothScroll } from '@/components/common/SmoothScroll';
 import { AuthProvider } from '@/features/account/AuthContext';
 import { CartProvider } from '@/features/cart/CartContext';
 import { FavoritesProvider } from '@/features/favorites/FavoritesContext';
+import { SearchProvider } from '@/features/search/SearchContext';
 import { SideCart } from '@/features/cart/SideCart';
+import { SearchModal } from '@/features/search/SearchModal';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -74,12 +76,15 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <FavoritesProvider>
-              <SmoothScroll>
-                <Navbar />
-                {children}
-                <Footer />
-                <SideCart />
-              </SmoothScroll>
+              <SearchProvider>
+                <SmoothScroll>
+                  <Navbar />
+                  {children}
+                  <Footer />
+                  <SideCart />
+                  <SearchModal />
+                </SmoothScroll>
+              </SearchProvider>
             </FavoritesProvider>
           </CartProvider>
         </AuthProvider>

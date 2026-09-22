@@ -1,13 +1,18 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from "react";
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { HeroSilkCanvas } from './components/HeroSilkCanvas';
 import { CollectionsFilterBar, CategoryFilter } from './CollectionsFilterBar';
 import { CollectionsGrid } from './CollectionsGrid';
 import { SORT_OPTIONS } from './collections.constants';
 import { SortOption } from './collections.types';
 import type { SareeProduct } from './components/hanging-card.types';
+
+const HeroSilkCanvas = dynamic(
+  () => import('./components/HeroSilkCanvas').then((mod) => mod.HeroSilkCanvas),
+  { ssr: false }
+);
 
 export const CollectionsPage: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('ALL');
@@ -17,30 +22,31 @@ export const CollectionsPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // ── Fetch products from Wix via our API route ────────────────────────────
-  useEffect(() => {
-    async function fetchProducts() {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('/api/products');
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-          setProducts(data.products as SareeProduct[]);
-        } else {
-          setError(data.error ?? 'Failed to fetch products.');
-        }
-      } catch (err) {
-        console.error('[CollectionsPage] Error fetching products:', err);
-        setError('Unable to load our saree collection right now. Please try again.');
-      } finally {
-        setLoading(false);
+  const fetchProducts = React.useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
       }
+      const data = await response.json();
+      if (data.success) {
+        setProducts(data.products as SareeProduct[]);
+      } else {
+        setError(data.error ?? 'Failed to fetch products.');
+      }
+    } catch (err) {
+      console.error('[CollectionsPage] Error fetching products:', err);
+      setError('Unable to load our saree collection right now. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    fetchProducts();
   }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   // ── Category filtering + sorting ─────────────────────────────────────────
   const filteredProducts = useMemo(() => {
@@ -94,19 +100,23 @@ export const CollectionsPage: React.FC = () => {
   const LoadingSkeleton = () => (
     <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="w-full flex flex-col gap-3 animate-pulse">
-          <div className="w-full aspect-[3/4] bg-[#E8DFD5]/60 rounded-sm" />
-          <div className="h-4 bg-[#E8DFD5]/60 rounded w-3/4" />
-          <div className="h-3 bg-[#E8DFD5]/40 rounded w-1/2" />
-          <div className="h-3 bg-[#E8DFD5]/60 rounded w-1/3" />
-          <div className="h-9 bg-[#E8DFD5]/40 rounded-xs mt-1" />
+        <div key={i} className="w-full flex flex-col gap-3">
+          <div className="relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-[24px] overflow-hidden border border-[#D9C7A7]/30 flex items-center justify-center p-3 animate-pulse">
+            <div className="w-full h-full bg-[#E8DFD5]/50 rounded-2xl" />
+          </div>
+          <div className="flex flex-col gap-1.5 px-0.5 pt-1 animate-pulse">
+            <div className="h-4 bg-[#E8DFD5]/80 rounded w-3/4" />
+            <div className="h-3 bg-[#E8DFD5]/50 rounded w-1/2" />
+            <div className="h-4 bg-[#E8DFD5]/70 rounded w-1/3 mt-1" />
+            <div className="h-9 bg-[#E8DFD5]/50 rounded-xs mt-2 border border-[#D9C7A7]/30" />
+          </div>
         </div>
       ))}
     </div>
   );
 
   return (
-    <div className="relative w-full bg-[#FAF7F2] text-[#382C26] min-h-screen pt-[100px] lg:pt-[130px] pb-32 px-5 sm:px-10 lg:px-16 max-w-[1800px] mx-auto font-satoshi overflow-hidden">
+    <div className="relative w-full bg-[#FAF7F2] text-[#382C26] min-h-screen pt-[100px] lg:pt-[130px] pb-32 px-4 sm:px-10 lg:px-16 max-w-[1800px] mx-auto font-satoshi overflow-x-hidden">
 
       {/* Subtle Parchment Texture & Radial Warm Light Layers */}
       <div
@@ -128,15 +138,15 @@ export const CollectionsPage: React.FC = () => {
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.25, 1, 0.5, 1] }}
-          className="flex flex-col items-center justify-center text-center my-8 lg:my-14 max-w-3xl mx-auto px-4"
+          className="flex flex-col items-center justify-center text-center my-8 lg:my-14 max-w-3xl mx-auto px-2 sm:px-4"
         >
           <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.35em] text-[#7D2130] bg-[#FAF7F2]/90 px-4 py-1 rounded-full border border-[#D9C7A7]/50 inline-block mb-3 shadow-2xs">
             HAUTE COUTURE ATELIER
           </span>
-          <h1 className="font-hero text-4xl sm:text-6xl md:text-7xl font-normal tracking-[0.16em] uppercase text-[#382C26] leading-none">
+          <h1 className="font-hero text-3xl min-[360px]:text-4xl sm:text-6xl md:text-7xl font-normal tracking-[0.1em] sm:tracking-[0.16em] uppercase text-[#382C26] leading-none">
             COLLECTIONS
           </h1>
-          <p className="mt-4 font-sans text-xs sm:text-sm md:text-base font-light tracking-[0.15em] uppercase text-[#736357]/90 max-w-lg">
+          <p className="mt-4 font-sans text-xs sm:text-sm md:text-base font-light tracking-[0.12em] sm:tracking-[0.15em] uppercase text-[#736357]/90 max-w-lg">
             Curated Sarees For Every Celebration
           </p>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#7D2130]/40 to-transparent mt-6" />
@@ -155,13 +165,20 @@ export const CollectionsPage: React.FC = () => {
         {loading && <LoadingSkeleton />}
 
         {!loading && error && (
-          <div className="w-full py-20 flex flex-col items-center justify-center text-center font-satoshi">
-            <p className="font-hero text-2xl text-[#7D2130] mb-2">Something Went Wrong</p>
-            <p className="text-xs uppercase tracking-widest text-[#736357] max-w-md">{error}</p>
+          <div className="w-full py-24 px-4 flex flex-col items-center justify-center text-center font-satoshi">
+            <div className="w-12 h-12 rounded-full border border-[#7D2130]/30 flex items-center justify-center mb-4 text-[#7D2130] bg-[#7D2130]/5">
+              <span className="font-hero text-lg font-bold">!</span>
+            </div>
+            <h2 className="font-hero text-2xl sm:text-3xl text-[#7D2130] font-normal tracking-[0.06em] mb-2">
+              Unable to Load Collection
+            </h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#736357] max-w-md mb-6 leading-relaxed">
+              {error}
+            </p>
             <button
               type="button"
-              onClick={() => window.location.reload()}
-              className="mt-6 px-6 py-2.5 border border-[#7D2130]/40 text-[#7D2130] text-xs uppercase tracking-widest hover:bg-[#7D2130] hover:text-white transition-colors rounded-xs cursor-pointer"
+              onClick={fetchProducts}
+              className="px-6 py-2.5 border border-[#7D2130] bg-[#7D2130] text-[#FAF7F2] text-xs uppercase tracking-[0.22em] font-medium rounded-xs hover:bg-[#5E1522] transition-colors duration-300 shadow-sm cursor-pointer"
             >
               Retry
             </button>
@@ -169,17 +186,32 @@ export const CollectionsPage: React.FC = () => {
         )}
 
         {!loading && !error && products.length === 0 && (
-          <div className="w-full py-20 flex flex-col items-center justify-center text-center font-satoshi">
-            <p className="font-hero text-2xl text-[#382C26] mb-2">Collection Coming Soon</p>
-            <p className="text-xs uppercase tracking-widest text-[#736357]">
-              Our curated sarees are being prepared. Please check back shortly.
+          <div className="w-full py-24 px-4 flex flex-col items-center justify-center text-center font-satoshi">
+            <h2 className="font-hero text-2xl sm:text-3xl text-[#382C26] font-normal tracking-[0.08em] mb-2">
+              No pieces found
+            </h2>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#736357] max-w-sm mb-6 leading-relaxed">
+              Our curated saree collection is currently being prepared.
             </p>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveCategory('ALL');
+                fetchProducts();
+              }}
+              className="px-6 py-3 border border-[#7D2130] bg-[#7D2130] text-[#FAF7F2] text-xs uppercase tracking-[0.22em] font-medium rounded-xs hover:bg-[#5E1522] transition-colors duration-300 shadow-sm cursor-pointer"
+            >
+              Explore Collection
+            </button>
           </div>
         )}
 
         {/* EDITORIAL PRODUCT GRID */}
         {!loading && !error && products.length > 0 && (
-          <CollectionsGrid products={filteredProducts} />
+          <CollectionsGrid
+            products={filteredProducts}
+            onResetCategory={() => setActiveCategory('ALL')}
+          />
         )}
 
       </div>

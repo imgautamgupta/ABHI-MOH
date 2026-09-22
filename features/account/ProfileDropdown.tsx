@@ -42,7 +42,8 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
   const menuItems = [
     { label: 'My Profile', href: '/account?tab=profile', icon: User },
     { label: 'My Orders', href: '/account?tab=orders', icon: Package },
-    { label: 'Wishlist', href: '/favorites', icon: Heart },
+    { label: 'Membership & Rewards', href: '/account?tab=membership', icon: Sparkles },
+    { label: 'Wishlist', href: '/account?tab=wishlist', icon: Heart },
     { label: 'Saved Addresses', href: '/account?tab=addresses', icon: MapPin },
   ];
 

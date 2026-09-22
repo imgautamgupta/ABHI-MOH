@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Minus, RotateCcw, ShieldAlert, Truck, X, CheckCircle2 } from 'lucide-react';
+import { Plus, Minus, RotateCcw, ShieldAlert, Truck, CheckCircle2 } from 'lucide-react';
 
 interface FaqItem {
   question: string;
@@ -34,7 +35,6 @@ const FAQ_ITEMS: FaqItem[] = [
 
 export const FaqAndReturnSection: React.FC = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -121,14 +121,14 @@ export const FaqAndReturnSection: React.FC = () => {
               </div>
 
               <p className="font-sans text-sm text-[#736357] font-light leading-relaxed mb-6">
-                Every ABHI-MOH creation undergoes rigorous quality inspection. If you wish to exchange your purchase, we provide a seamless 14-day hassle-free domestic exchange process with white-glove courier pickup.
+                Every ABHI-MOH creation undergoes rigorous quality inspection. If you wish to exchange your purchase, we provide a seamless 7-day hassle-free domestic exchange process with white-glove courier pickup.
               </p>
 
               {/* Quick Feature Highlights */}
               <div className="space-y-3.5 mb-8">
                 <div className="flex items-center gap-3 text-xs text-[#382C26] font-medium">
                   <CheckCircle2 className="w-4 h-4 text-[#7D2130]" />
-                  <span>14-Day Complimentary Domestic Exchanges</span>
+                  <span>7-Day Complimentary Domestic Exchanges</span>
                 </div>
                 <div className="flex items-center gap-3 text-xs text-[#382C26] font-medium">
                   <Truck className="w-4 h-4 text-[#7D2130]" />
@@ -142,100 +142,18 @@ export const FaqAndReturnSection: React.FC = () => {
             </div>
 
             {/* Read Full Policy Button */}
-            <button
-              type="button"
-              onClick={() => setIsReturnModalOpen(true)}
-              className="w-full bg-[#7D2130] hover:bg-[#5E1522] text-[#F5EFE7] font-satoshi text-xs uppercase tracking-[0.2em] font-medium py-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer text-center"
+            <Link
+              href="/returns"
+              className="w-full bg-[#7D2130] hover:bg-[#5E1522] text-[#F5EFE7] font-satoshi text-xs uppercase tracking-[0.2em] font-medium py-4 rounded-full shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer text-center block"
             >
               Read Full Policy
-            </button>
+            </Link>
           </div>
         </div>
       </div>
-
-      {/* FULL RETURN POLICY MODAL */}
-      <AnimatePresence>
-        {isReturnModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsReturnModalOpen(false)}
-              className="fixed inset-0 bg-[#382C26]/60 backdrop-blur-md"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="relative w-full max-w-2xl bg-[#F5EFE7] text-[#382C26] rounded-[24px] p-6 sm:p-10 shadow-2xl border border-[#D9C7A7] z-10 font-satoshi max-h-[90vh] overflow-y-auto"
-            >
-              {/* Close Button */}
-              <button
-                type="button"
-                onClick={() => setIsReturnModalOpen(false)}
-                className="absolute top-6 right-6 w-10 h-10 rounded-full bg-[#EADFCF] text-[#382C26] hover:bg-[#7D2130] hover:text-[#F5EFE7] transition-colors duration-200 flex items-center justify-center cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <div className="mb-6">
-                <span className="text-[11px] font-medium tracking-[0.25em] uppercase text-[#7D2130] bg-[#EADFCF] px-3.5 py-1.5 rounded-full border border-[#D9C7A7] inline-block mb-3">
-                  COMPLETE GUIDELINES
-                </span>
-                <h3 className="font-hero text-2xl sm:text-3xl font-medium uppercase text-[#382C26]">
-                  Full Return & Exchange Terms
-                </h3>
-              </div>
-
-              <div className="space-y-6 font-sans text-xs sm:text-sm text-[#736357] font-light leading-relaxed">
-                <div>
-                  <h4 className="font-section text-base font-medium text-[#382C26] mb-1">1. Eligibility Criteria</h4>
-                  <p>
-                    Returns or exchanges must be initiated within 14 days of delivery. Sarees must be unworn, unwashed, unaltered, and returned with original Silk Mark authentication tags and luxury box packaging.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-section text-base font-medium text-[#382C26] mb-1">2. Bespoke & Tailored Items</h4>
-                  <p>
-                    Sarees with custom blouse stitching or custom hand-embroidery requested by the client are bespoke creations and non-returnable unless a manufacturing defect is identified.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-section text-base font-medium text-[#382C26] mb-1">3. International Exchanges</h4>
-                  <p>
-                    For international orders outside India, returns are accepted within 14 days. Return shipping charges and customs duties are borne by the client, unless the product arrived damaged.
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="font-section text-base font-medium text-[#382C26] mb-1">4. Refund Processing</h4>
-                  <p>
-                    Once received and inspected at our New Delhi atelier, approved refunds are credited back to your original payment method within 5–7 business days.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-[#D9C7A7] flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setIsReturnModalOpen(false)}
-                  className="bg-[#7D2130] hover:bg-[#5E1522] text-[#F5EFE7] font-satoshi text-xs uppercase tracking-[0.2em] font-medium px-8 py-3 rounded-full shadow-md transition-all duration-300 cursor-pointer"
-                >
-                  I Understand
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </section>
   );
 };
 
 FaqAndReturnSection.displayName = 'FaqAndReturnSection';
+

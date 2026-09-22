@@ -11,14 +11,14 @@ export interface CartHeaderProps {
 
 export const CartHeader: React.FC<CartHeaderProps> = ({ itemCount, onClose }) => {
   return (
-    <div className="flex items-center justify-between px-6 lg:px-8 py-6 border-b border-[#E8DFD5] font-satoshi">
+    <div className="flex items-center justify-between px-6 lg:px-8 py-5 border-b border-[#D9C7A7]/40 bg-[#FAF7F2] font-satoshi select-none">
       {/* Title & Item Count */}
-      <div className="flex items-baseline gap-3">
-        <h2 className="font-hero text-2xl sm:text-3xl font-[500] tracking-[0.16em] uppercase text-[#7A1C28]">
+      <div className="flex items-baseline gap-2.5">
+        <h2 className="font-hero text-xl sm:text-2xl font-normal tracking-[0.1em] uppercase text-[#7D2130]">
           {CART_COPY.headerTitle}
         </h2>
-        <span className="font-sans text-xs font-medium tracking-wider text-[#6E645A]">
-          ({itemCount} {itemCount === 1 ? 'Item' : 'Items'})
+        <span className="font-sans text-xs font-light tracking-wider text-[#736357]">
+          ({itemCount} {itemCount === 1 ? 'Piece' : 'Pieces'})
         </span>
       </div>
 
@@ -26,8 +26,8 @@ export const CartHeader: React.FC<CartHeaderProps> = ({ itemCount, onClose }) =>
       <button
         type="button"
         onClick={onClose}
-        className="p-2 text-[#6E645A] hover:text-[#7A1C28] transition-colors duration-300 rounded-full hover:bg-[#F3ECE3] focus:outline-none focus-visible:ring-1 focus-visible:ring-[#7A1C28] cursor-pointer"
-        aria-label="Close Shopping Bag"
+        className="p-2 text-[#736357] hover:text-[#7D2130] transition-colors rounded-full hover:bg-[#7D2130]/10 focus:outline-none cursor-pointer"
+        aria-label="Close shopping bag"
       >
         <X className="w-5 h-5" />
       </button>

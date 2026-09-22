@@ -163,4 +163,130 @@ body {
 
 .animate-silk-wave {
   animation: silkWave 10s ease-in-out infinite;
-}
+}
+
+/* Cinematic Hero Fallback — subtle saree breathe animation */
+@keyframes subtlePulse {
+  0%, 100% {
+    transform: scale(1.0) translateY(0px);
+    opacity: 0.58;
+  }
+  50% {
+    transform: scale(1.04) translateY(-8px);
+    opacity: 0.65;
+  }
+}
+
+/* Hero sticky scroll — prevent horizontal overflow */
+.hero-scroll-container {
+  touch-action: pan-y;
+  overscroll-behavior-y: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITORIAL WIX RICH TEXT DESCRIPTION STYLING
+   ═══════════════════════════════════════════════════════════════════════════ */
+.wix-rich-description {
+  color: #5c4d44;
+  font-family: var(--font-satoshi), sans-serif;
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.8;
+  font-weight: 300;
+  letter-spacing: 0.015em;
+}
+
+.wix-rich-description p {
+  margin-bottom: 1rem;
+}
+
+.wix-rich-description p:last-child {
+  margin-bottom: 0;
+}
+
+.wix-rich-description h1,
+.wix-rich-description h2,
+.wix-rich-description h3,
+.wix-rich-description h4,
+.wix-rich-description h5,
+.wix-rich-description h6 {
+  font-family: var(--font-hero), serif;
+  color: #382C26;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.wix-rich-description h1 { font-size: 1.4rem; }
+.wix-rich-description h2 { font-size: 1.2rem; }
+.wix-rich-description h3 { font-size: 1.05rem; }
+.wix-rich-description h4 { font-size: 0.95rem; }
+
+.wix-rich-description ul,
+.wix-rich-description ol {
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  padding-left: 1.25rem;
+}
+
+.wix-rich-description ul {
+  list-style-type: disc;
+}
+
+.wix-rich-description ol {
+  list-style-type: decimal;
+}
+
+.wix-rich-description li {
+  margin-bottom: 0.35rem;
+  padding-left: 0.25rem;
+}
+
+.wix-rich-description strong,
+.wix-rich-description b {
+  font-weight: 600;
+  color: #382C26;
+}
+
+.wix-rich-description em,
+.wix-rich-description i {
+  font-style: italic;
+}
+
+.wix-rich-description a {
+  color: #7D2130;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s ease;
+}
+
+.wix-rich-description a:hover {
+  color: #5E1522;
+}
+
+.wix-rich-description blockquote {
+  border-left: 2px solid #D9C7A7;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  font-style: italic;
+  color: #736357;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ACCESSIBILITY & KEYBOARD FOCUS STYLES
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Visible focus indicators for keyboard navigation while preserving mouse aesthetics */
+:focus-visible {
+  outline: 2px solid #7D2130 !important;
+  outline-offset: 2px !important;
+}
+
+/* Subtle focus ring for dark sections */
+[class*="bg-[#2A090D]"] :focus-visible,
+[class*="bg-[#2B171A]"] :focus-visible,
+[class*="from-[#7D2130]"] :focus-visible {
+  outline: 2px solid #D9C7A7 !important;
+  outline-offset: 2px !important;
+}
+

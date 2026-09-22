@@ -6,11 +6,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ImageNavigator } from './ImageNavigator';
 import { FavoriteButton } from './FavoriteButton';
 import { Badge } from './Badge';
-import { BadgeType } from './hanging-card.types';
+import { BadgeType, SareeProduct } from './hanging-card.types';
+import { FavoriteItem } from '@/features/favorites/FavoritesContext';
 import { cn } from '@/lib/utils';
 
 export interface ProductImageProps {
   productId?: string;
+  product?: SareeProduct | FavoriteItem;
   images: string[];
   title: string;
   badges?: BadgeType[];
@@ -21,6 +23,7 @@ export interface ProductImageProps {
 
 export const ProductImage: React.FC<ProductImageProps> = ({
   productId,
+  product,
   images,
   title,
   badges,
@@ -32,14 +35,20 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
 
   const handlePrev = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     if (currentImageIndex > 0) {
       setCurrentImageIndex((prev) => prev - 1);
     }
   };
 
   const handleNext = (e?: React.MouseEvent) => {
-    if (e) e.stopPropagation();
+    if (e) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
     if (currentImageIndex < images.length - 1) {
       setCurrentImageIndex((prev) => prev + 1);
     }
@@ -70,7 +79,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       className={cn(
-        'relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-[24px]  overflow-hidden select-none border border-[#D9C7A7]/30 group/img cursor-pointer',
+        'relative w-full aspect-[3/4] bg-[#FAF7F2]/80 rounded-[24px] overflow-hidden select-none border border-[#D9C7A7]/30 group/img cursor-pointer',
         className
       )}
     >
@@ -83,7 +92,12 @@ export const ProductImage: React.FC<ProductImageProps> = ({
 
       {/* FAVORITE BUTTON OVERLAY (TOP-RIGHT) */}
       <div className="absolute top-3 right-3 z-20">
-        <FavoriteButton productId={productId} initialIsFavorite={isFavorite} onToggle={onFavoriteToggle} />
+        <FavoriteButton
+          productId={productId || product?.id}
+          product={product}
+          initialIsFavorite={isFavorite}
+          onToggle={onFavoriteToggle}
+        />
       </div>
 
       {/* PRODUCT IMAGE WITH SUBTLE ZOOM HOVER */}
@@ -116,18 +130,25 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         hasNext={currentImageIndex < images.length - 1}
       />
 
-      {/* CAROUSEL DOT INDICATORS */}
+      {/* CAROUSEL PILL & COUNTER INDICATOR */}
       {images.length > 1 && (
-        <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1 z-20 pointer-events-none opacity-0 group-hover/img:opacity-100 transition-opacity duration-300">
-          {images.map((_, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                'w-1.5 h-1.5 rounded-full transition-all duration-300',
-                idx === currentImageIndex ? 'bg-[#7D2130] w-3' : 'bg-[#736357]/40'
-              )}
-            />
-          ))}
+        <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center pointer-events-none z-20 opacity-90 sm:opacity-0 sm:group-hover/img:opacity-100 transition-opacity duration-300">
+          <div className="flex items-center gap-1.5 bg-[#FAF7F2]/90 backdrop-blur-md px-2.5 py-1 rounded-full border border-[#D9C7A7]/50 shadow-2xs">
+            <div className="flex items-center gap-1">
+              {images.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={cn(
+                    'h-1 rounded-full transition-all duration-300',
+                    idx === currentImageIndex ? 'bg-[#7D2130] w-3' : 'bg-[#736357]/40 w-1'
+                  )}
+                />
+              ))}
+            </div>
+            <span className="text-[9px] font-medium text-[#736357] pl-1 border-l border-[#D9C7A7]/70 tracking-wider">
+              {currentImageIndex + 1}/{images.length}
+            </span>
+          </div>
         </div>
       )}
     </div>

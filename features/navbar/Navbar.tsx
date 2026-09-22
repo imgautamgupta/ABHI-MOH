@@ -12,43 +12,55 @@ export const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
 
-      setIsScrolled(currentScrollY > 20);
+          setIsScrolled((prev) => {
+            const next = currentScrollY > 20;
+            return prev !== next ? next : prev;
+          });
 
-      // Always keep header visible near top
-      if (currentScrollY <= 80) {
-        gsap.to(headerRef.current, {
-          yPercent: 0,
-          duration: 0.4,
-          ease: 'power2.out',
-          overwrite: 'auto',
+          // Always keep header visible near top
+          if (currentScrollY <= 80) {
+            gsap.to(headerRef.current, {
+              yPercent: 0,
+              duration: 0.35,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+            lastScrollYRef.current = currentScrollY;
+            ticking = false;
+            return;
+          }
+
+          // Scrolling Down -> Hide Header
+          if (currentScrollY > lastScrollYRef.current + 8) {
+            gsap.to(headerRef.current, {
+              yPercent: -100,
+              duration: 0.35,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+          }
+          // Scrolling Up -> Reveal Header
+          else if (currentScrollY < lastScrollYRef.current - 8) {
+            gsap.to(headerRef.current, {
+              yPercent: 0,
+              duration: 0.35,
+              ease: 'power2.out',
+              overwrite: 'auto',
+            });
+          }
+
+          lastScrollYRef.current = currentScrollY;
+          ticking = false;
         });
-        lastScrollYRef.current = currentScrollY;
-        return;
+        ticking = true;
       }
-
-      // Scrolling Down -> Hide Header
-      if (currentScrollY > lastScrollYRef.current + 5) {
-        gsap.to(headerRef.current, {
-          yPercent: -100,
-          duration: 0.4,
-          ease: 'power2.out',
-          overwrite: 'auto',
-        });
-      }
-      // Scrolling Up -> Reveal Header
-      else if (currentScrollY < lastScrollYRef.current - 5) {
-        gsap.to(headerRef.current, {
-          yPercent: 0,
-          duration: 0.4,
-          ease: 'power2.out',
-          overwrite: 'auto',
-        });
-      }
-
-      lastScrollYRef.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });

@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { motion } from 'framer-motion';
 import * as THREE from 'three';
+import { WebGLCanvasWrapper } from '@/components/common/WebGLCanvasWrapper';
 
 const SilkSimulationMesh = () => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   const silkGeo = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(12, 6, 40, 20);
+    const geo = new THREE.PlaneGeometry(12, 6, 32, 16);
     const pos = geo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
@@ -32,6 +32,14 @@ const SilkSimulationMesh = () => {
     side: THREE.DoubleSide,
   }), []);
 
+  // Proper GPU resource cleanup
+  useEffect(() => {
+    return () => {
+      silkGeo.dispose();
+      silkMat.dispose();
+    };
+  }, [silkGeo, silkMat]);
+
   useFrame((state) => {
     if (!meshRef.current) return;
     const t = state.clock.elapsedTime * 0.35;
@@ -46,11 +54,9 @@ const SilkSimulationMesh = () => {
   );
 };
 
-import { WebGLCanvasWrapper } from '@/components/common/WebGLCanvasWrapper';
-
 const LookbookFallbackWave: React.FC = () => (
   <div className="absolute inset-0 pointer-events-none opacity-40 flex items-center justify-center">
-    <svg viewBox="0 0 1200 400" className="w-full h-full object-cover filter blur-[2px]">
+    <svg viewBox="0 0 1200 400" className="w-full h-full object-cover filter blur-[2px]" aria-hidden="true">
       <path d="M 0,150 C 300,90 600,210 900,120 C 1050,75 1150,180 1200,150 L 1200,400 L 0,400 Z" fill="url(#lbSilkGrad)" />
       <defs>
         <linearGradient id="lbSilkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -68,7 +74,19 @@ export const LookbookSilkCanvas: React.FC = () => {
       {/* 3D CANVAS WITH WEBGL FALLBACK */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <WebGLCanvasWrapper fallback={<LookbookFallbackWave />}>
-          <Canvas camera={{ position: [0, 0, 4.5], fov: 42 }} gl={{ alpha: true, antialias: true }}>
+          <Canvas
+            camera={{ position: [0, 0, 4.5], fov: 42 }}
+            dpr={[1, 1.5]}
+            gl={{
+              alpha: true,
+              antialias: true,
+              powerPreference: 'low-power',
+              preserveDrawingBuffer: false,
+            }}
+            onCreated={({ gl }) => {
+              gl.setClearColor(0x000000, 0);
+            }}
+          >
             <ambientLight intensity={0.6} color="#5E0006" />
             <spotLight position={[3, 5, 4]} intensity={2.5} color="#FFF5E6" />
             <spotLight position={[-4, 3, -2]} intensity={2.0} color="#C7A66A" />

@@ -29,17 +29,17 @@ export const FooterLinks: React.FC = () => {
         viewport={{ once: true, amount: 0.3 }}
         className="w-full flex items-center justify-between gap-6 sm:gap-12 py-5 border-t border-b border-[#C89D5C]/20"
       >
-        {/* Left Group: Instagram & Pinterest */}
+        {/* Left Group: Instagram & Threads */}
         <div className="flex items-center gap-8 sm:gap-14">
           {FOOTER_LEFT_SOCIALS.map((link) => {
             const Icon = link.icon;
             return (
               <motion.a
-                key={link.label}
+                key={link.id || link.label}
                 variants={FOOTER_SOCIAL_ITEM}
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={link.isExternal ? '_blank' : undefined}
+                rel={link.isExternal ? 'noopener noreferrer' : undefined}
                 className="group relative flex items-center gap-2 py-1 text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-[#F6ECE1]/85 hover:text-[#E5C388] transition-all duration-300 ease-silk focus:outline-none rounded-sm"
                 aria-label={link.label}
               >
@@ -59,11 +59,11 @@ export const FooterLinks: React.FC = () => {
             const Icon = link.icon;
             return (
               <motion.a
-                key={link.label}
+                key={link.id || link.label}
                 variants={FOOTER_SOCIAL_ITEM}
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                target={link.isExternal ? '_blank' : undefined}
+                rel={link.isExternal ? 'noopener noreferrer' : undefined}
                 className="group relative flex items-center gap-2 py-1 text-xs sm:text-sm font-medium uppercase tracking-[0.2em] text-[#F6ECE1]/85 hover:text-[#E5C388] transition-all duration-300 ease-silk focus:outline-none rounded-sm"
                 aria-label={link.label}
               >

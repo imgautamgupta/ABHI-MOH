@@ -3,6 +3,7 @@
 import React, { useRef, useMemo, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
+import { WebGLCanvasWrapper } from '@/components/common/WebGLCanvasWrapper';
 
 const SilkRibbonMesh = () => {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -57,14 +58,13 @@ const SilkRibbonMesh = () => {
   );
 };
 
-import { WebGLCanvasWrapper } from '@/components/common/WebGLCanvasWrapper';
-
-const SvgFallback = () => (
-  <div className="absolute inset-0 z-0 opacity-40 animate-silk-wave flex items-center justify-center">
+const SvgFallback: React.FC = () => (
+  <div className="absolute inset-0 z-0 opacity-40 animate-silk-wave flex items-center justify-center pointer-events-none">
     <svg
       viewBox="0 0 1200 400"
       className="w-full h-full object-cover filter blur-[2px]"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
     >
       <path
         d="M 0,150 C 300,90 600,210 900,120 C 1050,75 1150,180 1200,150 L 1200,400 L 0,400 Z"
@@ -100,7 +100,13 @@ export const HeroSilkCanvas: React.FC = () => {
           <div className="absolute inset-0 z-10 opacity-60">
             <Canvas
               camera={{ position: [0, 0, 4.5], fov: 45 }}
-              gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+              dpr={[1, 1.5]}
+              gl={{
+                alpha: true,
+                antialias: true,
+                powerPreference: 'low-power',
+                preserveDrawingBuffer: false,
+              }}
               onCreated={({ gl }) => {
                 gl.setClearColor(0x000000, 0);
               }}
@@ -118,4 +124,3 @@ export const HeroSilkCanvas: React.FC = () => {
 };
 
 HeroSilkCanvas.displayName = 'HeroSilkCanvas';
-

@@ -2,13 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ArrowRight } from 'lucide-react';
 import { useFavorites } from '@/features/favorites/FavoritesContext';
 import { HangingCard } from '@/features/collections/components/HangingCard';
 
 export default function FavoritesPage() {
-  const { favoriteProducts, totalFavoriteCount } = useFavorites();
+  const { favoriteProducts, totalFavoriteCount, isLoaded } = useFavorites();
 
   return (
     <div className="relative w-full bg-[#FAF7F2] text-[#382C26] min-h-screen pt-[110px] lg:pt-[140px] pb-32 px-5 sm:px-10 lg:px-16 max-w-[1800px] mx-auto font-satoshi overflow-hidden">
@@ -30,43 +30,56 @@ export default function FavoritesPage() {
             YOUR FAVORITES
           </h1>
           <p className="mt-4 font-sans text-xs sm:text-sm md:text-base font-light tracking-[0.15em] uppercase text-[#736357]/90 max-w-lg">
-            {totalFavoriteCount === 0
+            {!isLoaded || totalFavoriteCount === 0
               ? 'Your Personal Curation Awaits'
               : `${totalFavoriteCount} ${totalFavoriteCount === 1 ? 'Piece' : 'Pieces'} Saved In Your Wishlist`}
           </p>
           <div className="w-16 h-[1px] bg-gradient-to-r from-transparent via-[#7D2130]/40 to-transparent mt-6" />
         </motion.div>
 
-        {/* CONTENT CONDITION: EMPTY VS PRODUCTS EXIST */}
-        {totalFavoriteCount === 0 ? (
+        {/* CONTENT CONDITION: LOADING VS EMPTY VS PRODUCTS EXIST */}
+        {!isLoaded ? (
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start animate-pulse">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="w-full flex flex-col gap-3">
+                <div className="w-full aspect-[3/4] bg-[#E8DFD5]/60 rounded-2xl" />
+                <div className="h-4 bg-[#E8DFD5]/60 rounded w-3/4" />
+                <div className="h-3 bg-[#E8DFD5]/40 rounded w-1/2" />
+                <div className="h-9 bg-[#E8DFD5]/40 rounded-xs mt-1" />
+              </div>
+            ))}
+          </div>
+        ) : totalFavoriteCount === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
             className="flex flex-col items-center justify-center text-center py-20 px-6 max-w-lg mx-auto bg-[#F5EFE7]/60 backdrop-blur-md rounded-2xl border border-[#D9C7A7]/40 shadow-xs"
           >
             <div className="w-16 h-16 rounded-full bg-[#FAF7F2] border border-[#D9C7A7]/60 flex items-center justify-center mb-6 text-[#7D2130]">
               <Heart className="w-7 h-7" />
             </div>
             <h2 className="font-hero text-2xl sm:text-3xl uppercase tracking-[0.12em] text-[#382C26] mb-3">
-              Your favorites are waiting.
+              Your curated collection awaits.
             </h2>
             <p className="font-sans text-xs sm:text-sm text-[#736357] font-light leading-relaxed mb-8">
-              Save pieces you love and they will appear here for easy access and consultation with our Maison Concierge.
+              Save pieces you love and return to them anytime.
             </p>
             <Link
               href="/collections"
               className="inline-flex items-center gap-3 px-8 py-4 bg-[#7D2130] hover:bg-[#5E1522] text-[#FAF7F2] border border-[#D9C7A7]/40 font-satoshi text-xs uppercase tracking-[0.2em] font-medium transition-all duration-300 rounded-sm shadow-md hover:shadow-lg"
             >
-              <span>EXPLORE COLLECTIONS</span>
+              <span>Explore Collection</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 lg:gap-10">
-            {favoriteProducts.map((product) => (
-              <HangingCard key={product.id} product={product} />
-            ))}
+          <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start">
+            <AnimatePresence mode="popLayout">
+              {favoriteProducts.map((product) => (
+                <HangingCard key={product.id} product={product} />
+              ))}
+            </AnimatePresence>
           </div>
         )}
       </div>

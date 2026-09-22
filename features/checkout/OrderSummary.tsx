@@ -1,19 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { useCart } from '../cart/CartContext';
 import { GIFT_BOX_OPTIONS } from './checkout.constants';
 import { Price } from '../collections/components/Price';
 import { CheckoutStep } from './checkout.types';
 import { cn } from '@/lib/utils';
-import { ShieldCheck, Lock, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Lock, ArrowRight, ShoppingBag, Loader2, Crown, Award, Sparkles } from 'lucide-react';
+import { MembershipDetails } from '@/lib/account/types';
 
 export interface OrderSummaryProps {
   selectedBoxId?: string;
   isGiftDelivery?: boolean;
   currentStep?: CheckoutStep;
+  isLoading?: boolean;
   onNextStep?: () => void;
   onPaymentClick?: () => void;
   className?: string;
@@ -23,23 +26,50 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   selectedBoxId,
   isGiftDelivery = false,
   currentStep = 1,
+  isLoading = false,
   onNextStep,
   onPaymentClick,
   className,
 }) => {
   const { items } = useCart();
+  const [membership, setMembership] = useState<MembershipDetails | null>(null);
 
-  const subtotal = items.reduce((sum, item) => sum + item.priceNumber * item.quantity, 0);
+  // Fetch client membership tier securely from server API
+  useEffect(() => {
+    fetch('/api/account/membership')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.membership) {
+          setMembership(data.membership);
+        }
+      })
+      .catch((e) => console.warn('Could not load checkout membership tier:', e));
+  }, []);
+
+  const subtotal = items.reduce((sum, item) => sum + (item.priceNumber || 0) * (item.quantity || 1), 0);
 
   const selectedBox = GIFT_BOX_OPTIONS.find((b) => b.id === selectedBoxId) || GIFT_BOX_OPTIONS[0];
-  const packagingFee = isGiftDelivery ? selectedBox.priceNumber : 0;
-  const total = subtotal + packagingFee;
+
+  const isGold = membership?.tier === 'GOLD';
+  const isSilver = membership?.tier === 'SILVER';
+
+  // Packaging fee: Gold members get complimentary gift packaging
+  const originalPackagingFee = isGiftDelivery && selectedBox ? selectedBox.priceNumber : 0;
+  const packagingFee = isGold ? 0 : originalPackagingFee;
+
+  // Personal Member Discount calculation
+  const discountPercent = membership?.discountPercent || 0;
+  const discountAmount = Math.round((subtotal * discountPercent) / 100);
+
+  const total = Math.max(0, subtotal - discountAmount + packagingFee);
 
   const formattedSubtotal = `₹${subtotal.toLocaleString('en-IN')}`;
+  const formattedDiscount = `-₹${discountAmount.toLocaleString('en-IN')}`;
   const formattedPackaging = `₹${packagingFee.toLocaleString('en-IN')}`;
   const formattedTotal = `₹${total.toLocaleString('en-IN')}`;
 
   const handleAction = () => {
+    if (isLoading) return;
     if (currentStep === 4) {
       if (onPaymentClick) onPaymentClick();
     } else {
@@ -48,11 +78,41 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
   };
 
   const getButtonText = () => {
+    if (isLoading) return 'Connecting To Payment...';
     if (currentStep === 1) return 'Continue To Delivery';
     if (currentStep === 2) return isGiftDelivery ? 'Continue To Gift Experience' : 'Continue To Review';
     if (currentStep === 3) return 'Continue To Review';
     return 'Place Order';
   };
+
+  if (items.length === 0) {
+    return (
+      <div
+        className={cn(
+          'w-full bg-white border border-[#E8DFD5] rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-5 font-satoshi shadow-sm text-[#2A221E]',
+          className
+        )}
+      >
+        <div className="w-14 h-14 rounded-full bg-[#FAF7F2] border border-[#E8DFD5] flex items-center justify-center text-[#7A1C28]">
+          <ShoppingBag className="w-6 h-6 stroke-[1.5]" />
+        </div>
+        <div className="flex flex-col gap-1.5">
+          <h4 className="font-hero text-lg uppercase tracking-[0.14em] text-[#2A221E]">
+            Your Bag is Empty
+          </h4>
+          <p className="text-xs text-[#736357] font-light max-w-xs leading-relaxed">
+            Select a bespoke heirloom saree from our atelier collection to proceed with checkout.
+          </p>
+        </div>
+        <Link
+          href="/collections"
+          className="mt-2 px-6 py-3.5 rounded-full bg-[#7A1C28] text-[#FAF7F2] text-xs uppercase tracking-[0.18em] font-medium hover:bg-[#5C141E] transition-colors"
+        >
+          Explore Collection
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -64,9 +124,23 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div className="flex flex-col gap-4">
         {/* Title */}
         <div className="flex items-center justify-between border-b border-[#E8DFD5] pb-4">
-          <h3 className="font-hero text-lg font-[500] uppercase tracking-[0.16em] text-[#2A221E]">
-            Order Summary
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-hero text-lg font-[500] uppercase tracking-[0.16em] text-[#2A221E]">
+              Order Summary
+            </h3>
+            {isGold && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-widest font-semibold bg-[#C89D5C]/20 text-[#8F6526] border border-[#C89D5C]/40 flex items-center gap-1">
+                <Crown className="w-3 h-3" />
+                Gold
+              </span>
+            )}
+            {isSilver && (
+              <span className="px-2 py-0.5 rounded-full text-[9px] uppercase tracking-widest font-semibold bg-slate-200 text-slate-800 border border-slate-300 flex items-center gap-1">
+                <Award className="w-3 h-3" />
+                Silver
+              </span>
+            )}
+          </div>
           <span className="text-xs text-[#736357] font-light">
             {items.length} {items.length === 1 ? 'Piece' : 'Pieces'}
           </span>
@@ -106,10 +180,31 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <span className="text-[#2A221E] font-medium">{formattedSubtotal}</span>
           </div>
 
-          {isGiftDelivery && (
+          {/* Personal Member Discount Display */}
+          {discountAmount > 0 && (
+            <div className="flex items-center justify-between text-[#7A1C28] bg-[#FAF7F2] p-2.5 rounded-xl border border-[#C89D5C]/30">
+              <div className="flex items-center gap-1.5">
+                {isGold ? (
+                  <Crown className="w-3.5 h-3.5 text-[#C89D5C]" />
+                ) : (
+                  <Award className="w-3.5 h-3.5 text-[#7A1C28]" />
+                )}
+                <span className="font-medium uppercase tracking-wider text-[11px]">
+                  {isGold ? 'ABHI-MOH GOLD BENEFIT' : 'ABHI-MOH SILVER BENEFIT'} ({discountPercent}%)
+                </span>
+              </div>
+              <span className="font-semibold text-sm">{formattedDiscount}</span>
+            </div>
+          )}
+
+          {isGiftDelivery && selectedBox && (
             <div className="flex items-center justify-between text-[#736357]">
               <span>Packaging ({selectedBox.title})</span>
-              <span className="text-[#7A1C28] font-medium">{formattedPackaging}</span>
+              {isGold ? (
+                <span className="text-emerald-700 font-medium">Complimentary Gold Benefit</span>
+              ) : (
+                <span className="text-[#7A1C28] font-medium">{formattedPackaging}</span>
+              )}
             </div>
           )}
 
@@ -129,11 +224,17 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div className="flex flex-col gap-3 pt-2">
         <motion.button
           type="button"
+          disabled={isLoading}
           whileTap={{ scale: 0.98 }}
           onClick={handleAction}
-          className="w-full py-4 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#FAF7F2] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-[1px] cursor-pointer flex items-center justify-center gap-2"
+          className={cn(
+            'w-full py-4 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#FAF7F2] font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-[1px] cursor-pointer flex items-center justify-center gap-2',
+            isLoading && 'opacity-75 cursor-not-allowed'
+          )}
         >
-          {currentStep === 4 ? (
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 text-[#E5C388] animate-spin" />
+          ) : currentStep === 4 ? (
             <ShieldCheck className="w-4 h-4 text-[#E5C388]" />
           ) : (
             <ArrowRight className="w-3.5 h-3.5 text-[#E5C388]" />

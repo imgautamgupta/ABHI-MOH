@@ -7,9 +7,9 @@ export const CART_COPY = {
   shippingValue: 'Complimentary Express',
   totalLabel: 'Estimated Total',
   checkoutBtn: 'Proceed To Checkout',
-  continueShoppingBtn: 'Continue Shopping',
-  emptyTitle: 'Your Bag Is Empty',
-  emptySubtitle: 'Explore our curated haute-couture saree collections.',
+  continueShoppingBtn: 'Explore Collection',
+  emptyTitle: 'Your bag is waiting.',
+  emptySubtitle: 'Discover pieces made to be remembered.',
 };
 
 export const INITIAL_CART_ITEMS: CartItemModel[] = [];

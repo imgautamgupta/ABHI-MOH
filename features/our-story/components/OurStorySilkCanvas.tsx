@@ -61,6 +61,7 @@ const FallbackSilkWave: React.FC = () => (
       viewBox="0 0 1200 500"
       className="w-full h-full object-cover filter blur-[3px]"
       xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
     >
       <path
         d="M 0,200 C 350,110 700,280 1000,160 C 1120,110 1180,210 1200,180 L 1200,500 L 0,500 Z"
@@ -84,7 +85,13 @@ export const OurStorySilkCanvas: React.FC = () => {
         <div className="absolute inset-0 z-10 opacity-50">
           <Canvas
             camera={{ position: [0, 0, 4.5], fov: 45 }}
-            gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
+            dpr={[1, 1.5]}
+            gl={{
+              alpha: true,
+              antialias: true,
+              powerPreference: 'low-power',
+              preserveDrawingBuffer: false,
+            }}
             onCreated={({ gl }) => {
               gl.setClearColor(0x000000, 0);
             }}

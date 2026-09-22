@@ -39,7 +39,7 @@ export const AccountDropdown: React.FC = () => {
   return (
     <div ref={dropdownRef} className="relative inline-block text-left">
       <IconButton
-        ariaLabel={isLoggedIn && user ? `Account: ${user.name}` : 'User Account'}
+        ariaLabel="Account"
         onClick={() => setIsOpen((prev) => !prev)}
         className="relative"
       >

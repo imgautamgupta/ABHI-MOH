@@ -35,3 +35,5 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
+
+export * from '@/lib/account/types';

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProductBySlug } from "@/lib/product.service";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
@@ -24,7 +26,11 @@ export async function GET(
       );
     }
 
-    return NextResponse.json({ success: true, product });
+    const headers = {
+      'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+    };
+
+    return NextResponse.json({ success: true, product }, { headers });
   } catch (error) {
     console.error(`[/api/products/${slug}] Error:`, error);
 

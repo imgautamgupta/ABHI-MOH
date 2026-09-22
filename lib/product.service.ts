@@ -1,5 +1,5 @@
 import { wixClient } from './wix';
-import type { SareeProduct, BadgeType } from '@/features/collections/components/hanging-card.types';
+import type { SareeProduct, BadgeType, AdditionalInfoSection } from '@/features/collections/components/hanging-card.types';
 
 // ---------------------------------------------------------------------------
 // Category mapping — Wix collection names → existing CategoryFilter values
@@ -35,10 +35,16 @@ function normalizeCollectionName(name: string): CategoryFilter | null {
 const RIBBON_TO_BADGE: Record<string, BadgeType> = {
   'new arrival': 'New Arrival',
   'new arrivals': 'New Arrival',
+  'new': 'New Arrival',
   'limited edition': 'Limited Edition',
+  'limited': 'Limited Edition',
   'handwoven': 'Handwoven',
   'royal heritage': 'Royal Heritage',
   'masterpiece': 'Masterpiece',
+  'sale': 'Sale',
+  'special offer': 'Sale',
+  'discount': 'Sale',
+  'special edition': 'Special Edition',
 };
 
 function mapRibbons(ribbons?: { text?: string }[]): BadgeType[] {
@@ -104,18 +110,52 @@ export function mapWixProduct(
     images.push('/assets/sarees/saree-maroon.png'); // design fallback
   }
 
-  // ── Material / craft description ─────────────────────────────────────────
+  // ── Description & Material ────────────────────────────────────────────────
+  // Wix product description can be rich HTML markup or formatted plain text.
+  // We preserve the full untruncated content for detail pages, while providing a clean
+  // excerpt for compact collection cards.
   const rawDescription: string = product.description ?? '';
-  const material = rawDescription
-    ? stripHtml(rawDescription).slice(0, 100)
-    : 'Luxury Saree';
+  const plainDescription = stripHtml(rawDescription);
 
-  // ── Badges from ribbons ──────────────────────────────────────────────────
+  let materialExcerpt = 'Luxury Saree';
+  if (plainDescription) {
+    const firstSentence = plainDescription.split(/[.!?]\s/)[0];
+    materialExcerpt =
+      firstSentence && firstSentence.length <= 80
+        ? firstSentence
+        : plainDescription.length > 75
+        ? `${plainDescription.slice(0, 75).trim()}…`
+        : plainDescription;
+  }
+
+  // ── Additional Info Sections from Wix ────────────────────────────────────
+  const additionalInfo: AdditionalInfoSection[] = [];
+  if (Array.isArray(product.additionalInfoSections)) {
+    for (const sec of product.additionalInfoSections) {
+      if (sec && (sec.title || sec.description)) {
+        additionalInfo.push({
+          title: sec.title || 'Product Information',
+          description: sec.description || '',
+        });
+      }
+    }
+  }
+
+  // ── Badges from ribbons & active discount ───────────────────────────────
   const badges = mapRibbons(product.ribbons);
+  if (isDiscounted && !badges.includes('Sale')) {
+    badges.unshift('Sale');
+  }
 
-  // ── Category from Wix collections ───────────────────────────────────────
+  // ── Category from Wix product groups (V3) / collections (V1) ────────────
   let category: CategoryFilter = undefined;
-  const collectionIds: string[] = product.collectionIds ?? [];
+  // V3 catalog stores group membership under categoryIds or productGroupIds;
+  // V1 used collectionIds — check all to stay backward-compatible.
+  const collectionIds: string[] = [
+    ...(product.collectionIds ?? []),
+    ...(product.categoryIds ?? []),
+    ...(product.productGroupIds ?? []),
+  ];
   for (const cid of collectionIds) {
     const cat = collectionMap.get(cid);
     if (cat) {
@@ -137,11 +177,31 @@ export function mapWixProduct(
     }
   }
 
+  // ── Saree Craft Specifications ──────────────────────────────────────────
+  const fullText = `${product.name ?? ''} ${rawDescription}`.toLowerCase();
+  let origin = 'Varanasi, India';
+  if (fullText.includes('chanderi')) origin = 'Chanderi, Madhya Pradesh';
+  else if (fullText.includes('kanchipuram') || fullText.includes('kanjivaram')) origin = 'Kanchipuram, Tamil Nadu';
+  else if (fullText.includes('paithani') || fullText.includes('pathai')) origin = 'Paithan, Maharashtra';
+  else if (fullText.includes('tussar')) origin = 'Bhagalpur, Bihar';
+  else if (fullText.includes('banarasi') || fullText.includes('banaras')) origin = 'Varanasi, Uttar Pradesh';
+
+  let weave = 'Handloom Artisan Brocade';
+  if (fullText.includes('kadhwa')) weave = 'Authentic Kadhwa Handloom Weave';
+  else if (fullText.includes('tanchoi')) weave = 'Tanchoi Silk Brocade';
+  else if (fullText.includes('zari') || fullText.includes('gold')) weave = 'Gold Zari Floral Jaal Weave';
+  else if (fullText.includes('tussar')) weave = 'Tussar Handwoven Texture';
+  else if (fullText.includes('organza')) weave = 'Pure Organza Sheer Weave';
+  else if (fullText.includes('paithani') || fullText.includes('pathai')) weave = 'Paithani Silk with Muniya Border';
+
   return {
     id: product._id ?? '',
     name: product.name ?? 'Unnamed Saree',
     slug: product.slug ?? product._id ?? '',
-    material,
+    description: rawDescription || materialExcerpt,
+    descriptionHtml: rawDescription || undefined,
+    plainDescription: plainDescription || materialExcerpt,
+    material: materialExcerpt,
     price: effectivePriceFormatted,
     priceNumber: effectivePriceNum,
     ...(isDiscounted && {
@@ -153,54 +213,127 @@ export function mapWixProduct(
     isFavorite: false,
     inStock,
     category,
+    origin,
+    weave,
+    sareeLength: '5.5 Meters',
+    blousePiece: 'Included (0.8m Unstitched)',
+    care: 'Dry Clean Only',
+    additionalInfo: additionalInfo.length > 0 ? additionalInfo : undefined,
     createdAt,
   };
 }
 
 // ---------------------------------------------------------------------------
-// Fetch Wix collections → build collectionId → CategoryFilter map
+// In-Memory Cache with TTL to minimize redundant Wix API roundtrips
+// ---------------------------------------------------------------------------
+const CACHE_TTL_MS = 60 * 1000; // 60 seconds TTL
+
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+let productsCache: CacheEntry<SareeProduct[]> | null = null;
+let collectionMapCache: CacheEntry<Map<string, CategoryFilter>> | null = null;
+const singleProductCache = new Map<string, CacheEntry<SareeProduct | null>>();
+
+// Flag to avoid repeated console warnings if Wix group API is uninstalled
+let hasLoggedCollectionWarning = false;
+
+// ---------------------------------------------------------------------------
+// Fetch Wix collections → build collectionId → CategoryFilter map (Cached)
 // ---------------------------------------------------------------------------
 async function buildCollectionMap(): Promise<Map<string, CategoryFilter>> {
+  const now = Date.now();
+  if (collectionMapCache && now - collectionMapCache.timestamp < CACHE_TTL_MS) {
+    return collectionMapCache.data;
+  }
+
   const map = new Map<string, CategoryFilter>();
   try {
-    const result = await wixClient.collections.queryCollections().find();
+    const result = await wixClient.productGroupsV3.queryProductGroups().find();
     for (const col of result.items) {
       if (col._id && col.name) {
         const cat = normalizeCollectionName(col.name);
         if (cat) map.set(col._id, cat);
       }
     }
-  } catch (err) {
-    // Collections query may fail if the OAuth scope is not granted yet.
-    // Products will still load; they just won't have category assigned.
-    console.warn('[product.service] Could not fetch Wix collections:', err);
+    collectionMapCache = { data: map, timestamp: now };
+    return map;
+  } catch {
+    // V3 product groups unavailable, try V1 collections query
+    try {
+      const v1Result = await wixClient.collections.queryCollections().find();
+      for (const col of v1Result.items) {
+        if (col._id && col.name) {
+          const cat = normalizeCollectionName(col.name);
+          if (cat) map.set(col._id, cat);
+        }
+      }
+      collectionMapCache = { data: map, timestamp: now };
+      return map;
+    } catch {
+      if (!hasLoggedCollectionWarning && process.env.NODE_ENV === 'development') {
+        console.warn('[product.service] Wix collections/groups unavailable; categories inferred from product metadata.');
+        hasLoggedCollectionWarning = true;
+      }
+      if (collectionMapCache) return collectionMapCache.data;
+    }
   }
   return map;
 }
 
 // ---------------------------------------------------------------------------
-// Public API
+// Public API with Intelligent Caching
 // ---------------------------------------------------------------------------
 
 /** Returns all visible Wix products mapped to SareeProduct[]. */
 export async function getProducts(limit = 100): Promise<SareeProduct[]> {
+  const now = Date.now();
+  if (productsCache && now - productsCache.timestamp < CACHE_TTL_MS) {
+    return productsCache.data;
+  }
+
   const [productsResult, collectionMap] = await Promise.all([
     wixClient.products.queryProducts().limit(limit).find(),
     buildCollectionMap(),
   ]);
 
-  return productsResult.items
+  const mapped = productsResult.items
     .filter((p) => p.visible !== false)
     .map((p) => mapWixProduct(p, collectionMap));
+
+  productsCache = { data: mapped, timestamp: now };
+
+  // Prime single-product cache for each loaded item to make detail navigations instant
+  for (const item of mapped) {
+    if (item.slug) {
+      singleProductCache.set(item.slug, { data: item, timestamp: now });
+    }
+  }
+
+  return mapped;
 }
 
 /** Returns a single product by slug, or null if not found. */
 export async function getProductBySlug(slug: string): Promise<SareeProduct | null> {
+  const now = Date.now();
+  const cached = singleProductCache.get(slug);
+  if (cached && now - cached.timestamp < CACHE_TTL_MS) {
+    return cached.data;
+  }
+
   const [productsResult, collectionMap] = await Promise.all([
     wixClient.products.queryProducts().eq('slug', slug).limit(1).find(),
     buildCollectionMap(),
   ]);
 
-  if (productsResult.items.length === 0) return null;
-  return mapWixProduct(productsResult.items[0], collectionMap);
+  if (productsResult.items.length === 0) {
+    singleProductCache.set(slug, { data: null, timestamp: now });
+    return null;
+  }
+
+  const mapped = mapWixProduct(productsResult.items[0], collectionMap);
+  singleProductCache.set(slug, { data: mapped, timestamp: now });
+  return mapped;
 }

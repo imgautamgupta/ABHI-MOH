@@ -16,6 +16,7 @@ export const AddToBagButton: React.FC<AddToBagButtonProps> = ({ onAdd, disabled 
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (disabled) return;
     setIsAdded(true);
     if (onAdd) onAdd();
@@ -31,14 +32,14 @@ export const AddToBagButton: React.FC<AddToBagButtonProps> = ({ onAdd, disabled 
       onClick={handleClick}
       disabled={disabled}
       className={cn(
-        'group/btn relative w-full py-2.5 px-4 rounded-xs border font-satoshi font-medium text-[11px] uppercase tracking-[0.2em] transition-all duration-400 overflow-hidden flex items-center justify-between select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[#7D2130]',
+        'group/btn relative w-full min-h-[42px] py-2.5 px-3 min-[360px]:px-4 rounded-xs border font-satoshi font-medium text-[10px] min-[360px]:text-[11px] uppercase tracking-[0.16em] min-[360px]:tracking-[0.2em] transition-all duration-400 overflow-hidden flex items-center justify-between select-none focus:outline-none focus-visible:ring-1 focus-visible:ring-[#7D2130]',
         disabled
-          ? 'border-[#D9C7A7]/50 text-[#736357]/50 cursor-not-allowed'
-          : 'border-[#7D2130]/30 hover:border-[#7D2130] text-[#7D2130] hover:text-[#FAF7F2] cursor-pointer',
+          ? 'border-[#D9C7A7]/40 bg-[#E8DFD5]/40 text-[#736357]/60 cursor-not-allowed'
+          : 'border-[#7D2130]/30 hover:border-[#7D2130] text-[#7D2130] hover:text-[#FAF7F2] cursor-pointer active:scale-[0.98]',
         isAdded && 'bg-emerald-800 text-emerald-50 border-emerald-700 hover:bg-emerald-700 hover:text-white',
         className
       )}
-      aria-label={disabled ? 'Out Of Stock' : 'Add To Bag'}
+      aria-label={disabled ? 'Sold Out' : 'Add To Bag'}
     >
       {/* Gentle expanding burgundy background on hover */}
       {!disabled && (
@@ -46,8 +47,8 @@ export const AddToBagButton: React.FC<AddToBagButtonProps> = ({ onAdd, disabled 
       )}
 
       {disabled ? (
-        <span className="flex items-center justify-between w-full">
-          <span>Out Of Stock</span>
+        <span className="flex items-center justify-center w-full text-center text-[#736357]/70 font-normal">
+          <span>Sold Out</span>
         </span>
       ) : isAdded ? (
         <span className="flex items-center justify-between w-full text-emerald-100 font-medium">

@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DeliveryData } from './checkout.types';
 import { STEP_TRANSITION_VARIANTS } from './checkout.animations';
 import { cn } from '@/lib/utils';
-import { Gift, PackageCheck } from 'lucide-react';
+import { Gift, PackageCheck, AlertCircle } from 'lucide-react';
 
 export interface DeliveryProps {
   data: DeliveryData;
@@ -15,8 +15,15 @@ export interface DeliveryProps {
   className?: string;
 }
 
+export interface DeliveryErrors {
+  address?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+}
+
 const inputClass =
-  'w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-sm';
+  'w-full bg-[#FAF7F2] border text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 text-base sm:text-sm';
 
 export const Delivery: React.FC<DeliveryProps> = ({
   data,
@@ -25,9 +32,55 @@ export const Delivery: React.FC<DeliveryProps> = ({
   onBack,
   className,
 }) => {
+  const [errors, setErrors] = useState<DeliveryErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validate = (): boolean => {
+    const newErrors: DeliveryErrors = {};
+
+    // 1. Street Address
+    const addressTrimmed = data.address.trim();
+    if (!addressTrimmed) {
+      newErrors.address = 'Please enter your street address';
+    } else if (addressTrimmed.length < 5) {
+      newErrors.address = 'Street address must be at least 5 characters';
+    }
+
+    // 2. City
+    const cityTrimmed = data.city.trim();
+    if (!cityTrimmed) {
+      newErrors.city = 'City is required';
+    }
+
+    // 3. State
+    const stateTrimmed = data.state.trim();
+    if (!stateTrimmed) {
+      newErrors.state = 'State is required';
+    }
+
+    // 4. Pincode (6 digits)
+    const rawPincode = data.pincode.replace(/\D/g, '');
+    if (!rawPincode) {
+      newErrors.pincode = 'Pincode is required for courier routing';
+    } else if (rawPincode.length !== 6 || !/^\d{6}$/.test(rawPincode)) {
+      newErrors.pincode = 'Please enter a valid 6-digit Indian pincode';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onNext();
+    setTouched({ address: true, city: true, state: true, pincode: true });
+    if (validate()) {
+      onNext();
+    }
+  };
+
+  const handleBlur = (field: keyof DeliveryData) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    validate();
   };
 
   return (
@@ -37,6 +90,7 @@ export const Delivery: React.FC<DeliveryProps> = ({
       animate="animate"
       exit="exit"
       onSubmit={handleSubmit}
+      noValidate
       className={cn('flex flex-col gap-6 font-satoshi text-left w-full', className)}
     >
       {/* Step Header */}
@@ -56,14 +110,28 @@ export const Delivery: React.FC<DeliveryProps> = ({
         </label>
         <textarea
           id="del-address"
-          required
           rows={3}
           autoComplete="street-address"
-          placeholder="Enter your complete address"
+          placeholder="Enter your complete flat, house, and street address"
           value={data.address}
-          onChange={(e) => onChange({ ...data, address: e.target.value })}
-          className="w-full bg-[#FAF7F2] border border-[#D9C7A7] focus:border-[#7A1C28] text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 resize-none text-sm"
+          onBlur={() => handleBlur('address')}
+          onChange={(e) => {
+            onChange({ ...data, address: e.target.value });
+            if (errors.address) setErrors((prev) => ({ ...prev, address: undefined }));
+          }}
+          className={cn(
+            'w-full bg-[#FAF7F2] border text-[#2A221E] placeholder:text-[#C9A96E]/60 px-4 py-3.5 rounded-xl outline-none transition-colors duration-200 resize-none text-base sm:text-sm',
+            errors.address && touched.address
+              ? 'border-[#7A1C28] ring-1 ring-[#7A1C28]/25 bg-[#7A1C28]/5'
+              : 'border-[#D9C7A7] focus:border-[#7A1C28]'
+          )}
         />
+        {errors.address && touched.address && (
+          <span className="text-xs text-[#7A1C28] flex items-center gap-1.5 font-normal mt-0.5">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>{errors.address}</span>
+          </span>
+        )}
       </div>
 
       {/* City, State & Pincode */}
@@ -75,13 +143,27 @@ export const Delivery: React.FC<DeliveryProps> = ({
           <input
             id="del-city"
             type="text"
-            required
             autoComplete="address-level2"
             placeholder="Enter city"
             value={data.city}
-            onChange={(e) => onChange({ ...data, city: e.target.value })}
-            className={inputClass}
+            onBlur={() => handleBlur('city')}
+            onChange={(e) => {
+              onChange({ ...data, city: e.target.value });
+              if (errors.city) setErrors((prev) => ({ ...prev, city: undefined }));
+            }}
+            className={cn(
+              inputClass,
+              errors.city && touched.city
+                ? 'border-[#7A1C28] ring-1 ring-[#7A1C28]/25 bg-[#7A1C28]/5'
+                : 'border-[#D9C7A7] focus:border-[#7A1C28]'
+            )}
           />
+          {errors.city && touched.city && (
+            <span className="text-xs text-[#7A1C28] flex items-center gap-1.5 font-normal mt-0.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{errors.city}</span>
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -91,13 +173,27 @@ export const Delivery: React.FC<DeliveryProps> = ({
           <input
             id="del-state"
             type="text"
-            required
             autoComplete="address-level1"
             placeholder="Enter state"
             value={data.state}
-            onChange={(e) => onChange({ ...data, state: e.target.value })}
-            className={inputClass}
+            onBlur={() => handleBlur('state')}
+            onChange={(e) => {
+              onChange({ ...data, state: e.target.value });
+              if (errors.state) setErrors((prev) => ({ ...prev, state: undefined }));
+            }}
+            className={cn(
+              inputClass,
+              errors.state && touched.state
+                ? 'border-[#7A1C28] ring-1 ring-[#7A1C28]/25 bg-[#7A1C28]/5'
+                : 'border-[#D9C7A7] focus:border-[#7A1C28]'
+            )}
           />
+          {errors.state && touched.state && (
+            <span className="text-xs text-[#7A1C28] flex items-center gap-1.5 font-normal mt-0.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{errors.state}</span>
+            </span>
+          )}
         </div>
 
         <div className="flex flex-col gap-1.5">
@@ -107,14 +203,29 @@ export const Delivery: React.FC<DeliveryProps> = ({
           <input
             id="del-pincode"
             type="text"
-            required
             autoComplete="postal-code"
             maxLength={6}
-            placeholder="Enter pincode"
+            placeholder="6-digit pincode"
             value={data.pincode}
-            onChange={(e) => onChange({ ...data, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-            className={inputClass}
+            onBlur={() => handleBlur('pincode')}
+            onChange={(e) => {
+              const cleaned = e.target.value.replace(/\D/g, '').slice(0, 6);
+              onChange({ ...data, pincode: cleaned });
+              if (errors.pincode) setErrors((prev) => ({ ...prev, pincode: undefined }));
+            }}
+            className={cn(
+              inputClass,
+              errors.pincode && touched.pincode
+                ? 'border-[#7A1C28] ring-1 ring-[#7A1C28]/25 bg-[#7A1C28]/5'
+                : 'border-[#D9C7A7] focus:border-[#7A1C28]'
+            )}
           />
+          {errors.pincode && touched.pincode && (
+            <span className="text-xs text-[#7A1C28] flex items-center gap-1.5 font-normal mt-0.5">
+              <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+              <span>{errors.pincode}</span>
+            </span>
+          )}
         </div>
       </div>
 

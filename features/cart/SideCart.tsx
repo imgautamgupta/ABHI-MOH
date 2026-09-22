@@ -45,17 +45,17 @@ export const SideCart: React.FC = () => {
             animate="animate"
             exit="exit"
             onClick={closeCart}
-            className="absolute inset-0 bg-black/40 backdrop-blur-xs cursor-pointer"
+            className="absolute inset-0 bg-[#2A221E]/60 backdrop-blur-xs cursor-pointer z-40"
             aria-hidden="true"
           />
 
-          {/* 2. SIDE CART DRAWER (FROSTED IVORY GLASS) */}
+          {/* 2. SIDE CART DRAWER (WARM IVORY LUXURY GLASS) */}
           <motion.div
             variants={DRAWER_SLIDE_VARIANTS}
             initial="initial"
             animate="animate"
             exit="exit"
-            className="absolute top-0 right-0 bottom-0 w-full sm:max-w-[420px] lg:max-w-[480px] bg-[#FFFDFC]/98 backdrop-blur-[24px] border-l border-[#E8DFD5] shadow-2xl flex flex-col justify-between overflow-hidden text-[#2A221E]"
+            className="absolute top-0 right-0 bottom-0 w-full sm:max-w-[420px] lg:max-w-[480px] bg-[#FAF7F2]/98 backdrop-blur-[24px] border-l border-[#D9C7A7]/50 shadow-2xl flex flex-col justify-between overflow-hidden text-[#382C26] z-50"
             role="dialog"
             aria-modal="true"
             aria-label="Shopping Bag"
@@ -69,7 +69,7 @@ export const SideCart: React.FC = () => {
             ) : (
               <>
                 {/* Scrollable Items List */}
-                <div className="flex-1 overflow-y-auto px-6 lg:px-8 divide-y divide-[#C89D5C]/20">
+                <div className="flex-1 overflow-y-auto px-6 lg:px-8 divide-y divide-[#D9C7A7]/30 no-scrollbar">
                   <AnimatePresence initial={false}>
                     {items.map((item) => (
                       <CartItem
@@ -86,9 +86,7 @@ export const SideCart: React.FC = () => {
                 <CartFooter
                   subtotal={subtotal}
                   onClose={closeCart}
-                  onCheckout={() => {
-                    window.location.href = '/checkout';
-                  }}
+                  onCheckout={closeCart}
                 />
               </>
             )}

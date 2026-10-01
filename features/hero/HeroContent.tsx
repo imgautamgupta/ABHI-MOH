@@ -17,7 +17,7 @@ export const HeroContent: React.FC = () => {
       {/* 1. Vintage Boutique Subtitle */}
       <motion.div variants={HERO_ITEM_FADE_UP}>
         <span className="text-[11px] font-medium tracking-[0.3em] uppercase text-[#7A1C28] bg-[#F3ECE3] px-3.5 py-1.5 rounded-full border border-[#E8DFD5] inline-block mb-3">
-          HAUTE COUTURE MAISON
+          HAUTE COUTURE SAREES
         </span>
       </motion.div>
 

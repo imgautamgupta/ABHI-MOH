@@ -57,7 +57,7 @@ export const EditorialStoryCard: React.FC<EditorialStoryCardProps> = ({
                   isDark ? 'text-[#C7A66A]' : 'text-[#7D2130]'
                 )}
               >
-                MAISON ABHI-MOH • {story.category}
+                ABHI-MOH • {story.category}
               </div>
 
               {/* Main Tall Image */}

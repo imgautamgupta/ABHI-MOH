@@ -117,13 +117,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccessLogin, className 
             />
           </div>
 
-          {/* Verify & Enter Maison Button */}
+          {/* Verify & Access Account Button */}
           <button
             type="submit"
             className="w-full py-3.5 mt-2 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#F6ECE1] border border-[#C89D5C]/35 font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 ease-silk flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg"
           >
             <ShieldCheck className="w-4 h-4 text-[#E5C388]" />
-            <span>Verify & Access Maison</span>
+            <span>Verify & Access Account</span>
           </button>
         </>
       )}

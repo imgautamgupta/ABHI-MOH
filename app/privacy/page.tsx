@@ -38,7 +38,7 @@ export default function PrivacyPolicyPage() {
         <div className="flex flex-col items-start gap-2 border-b border-[#E8DFD5] pb-8 mb-10">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-semibold text-[#7D2130] bg-[#F3ECE3] px-3.5 py-1 rounded-full border border-[#E8DFD5]">
             <ShieldCheck className="w-3.5 h-3.5 text-[#C9A96E]" />
-            <span>Maison Client Protection Charter</span>
+            <span>Client Protection Charter</span>
           </div>
           <h1 className="font-hero text-3xl sm:text-5xl uppercase tracking-[0.08em] text-[#2A221E] mt-2">
             Privacy Policy
@@ -106,7 +106,7 @@ export default function PrivacyPolicyPage() {
               <span>4. Patron Rights &amp; Data Control</span>
             </h2>
             <p>
-              As an esteemed patron of our maison, you retain full sovereignty over your personal data:
+              As an esteemed patron of ABHI-MOH, you retain full sovereignty over your personal data:
             </p>
             <ul className="list-disc pl-6 space-y-1.5 text-xs sm:text-sm">
               <li><strong>Right of Access:</strong> Request a complete summary of personal records held in your atelier dossier.</li>

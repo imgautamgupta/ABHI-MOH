@@ -87,7 +87,7 @@ export const Lookbook: React.FC = () => {
                     &ldquo;A saree is not merely draped; it is sculpted around the wearer&apos;s story.&rdquo;
                   </blockquote>
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[#C7A66A]/80 font-medium">
-                    MAISON ABHI-MOH ATELIER
+                    ABHI-MOH ATELIER
                   </p>
                 </div>
               </section>
@@ -100,7 +100,7 @@ export const Lookbook: React.FC = () => {
       <section className="w-full py-24 lg:py-32 bg-[#FAF7F2] border-t border-[#D9C7A7]/40 px-6 text-center select-none">
         <div className="max-w-2xl mx-auto flex flex-col items-center">
           <span className="text-[10px] uppercase tracking-[0.4em] text-[#7D2130] font-semibold mb-3">
-            MAISON ABHI-MOH
+            ABHI-MOH
           </span>
           <h2 className="font-hero text-3xl sm:text-5xl uppercase tracking-[0.12em] text-[#382C26] mb-4">
             EXPLORE THE COLLECTION

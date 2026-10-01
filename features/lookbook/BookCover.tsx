@@ -35,7 +35,7 @@ export const BookCover: React.FC<BookCoverProps> = ({ isOpen, onOpen, className 
           AM
         </div>
         <span className="text-[10px] uppercase tracking-[0.3em] text-[#6A625A] font-light">
-          Maison Edition
+          Special Edition
         </span>
       </div>
 

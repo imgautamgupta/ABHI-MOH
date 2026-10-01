@@ -1,5 +1,5 @@
 /**
- * Global Site Constants for ABHI-MOH Luxury Fashion Maison
+ * Global Site Constants for ABHI-MOH Luxury Sarees
  */
 
 /**
@@ -18,7 +18,7 @@ export const CONTACT = {
 
 export const SITE_METADATA = {
   name: 'ABHI-MOH',
-  tagline: 'Haute Couture Saree Maison',
+  tagline: 'Haute Couture Sarees',
   description: 'Experience the pinnacle of Indian luxury sarees, handcrafted Varanasi weaves, pure Kanjivaram silks, and royal heritage drapes at ABHI-MOH.',
   url: 'https://abhi-moh.com',
   ogImage: '/assets/sarees/saree-maroon.png',

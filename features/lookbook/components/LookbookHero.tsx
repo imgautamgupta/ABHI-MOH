@@ -31,7 +31,7 @@ export const LookbookHero: React.FC<LookbookHeroProps> = ({
         <div className="flex items-center gap-2.5 mb-4">
           <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.35em] text-[#7D2130] bg-[#FAF7F2]/90 px-4 py-1 rounded-full border border-[#D9C7A7]/60 inline-flex items-center gap-1.5 shadow-2xs">
             <Sparkles className="w-3 h-3" />
-            <span>MAISON ABHI-MOH • COUTURE EDITORIAL</span>
+            <span>ABHI-MOH • COUTURE EDITORIAL</span>
           </span>
         </div>
 

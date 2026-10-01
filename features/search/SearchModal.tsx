@@ -211,7 +211,7 @@ export const SearchModal: React.FC = () => {
               {!isLoading && !hasSearched && (
                 <div className="py-12 flex flex-col items-center justify-center text-center">
                   <span className="text-[10px] uppercase tracking-[0.3em] text-[#7D2130] font-semibold mb-2">
-                    MAISON ABHI-MOH ARCHIVE
+                    ABHI-MOH ARCHIVE
                   </span>
                   <p className="font-hero text-xl sm:text-2xl text-[#382C26] font-light max-w-md leading-relaxed">
                     Explore artisanal Varanasi brocades, Kanjivaram silks, and royal heritage drapes.

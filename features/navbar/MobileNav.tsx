@@ -243,10 +243,10 @@ export const MobileNav: React.FC = () => {
                     ))}
                   </motion.nav>
 
-                  {/* Bottom Socials & Maison Concierge Footer */}
+                  {/* Bottom Socials & Concierge Footer */}
                   <div className="pt-3 sm:pt-4 border-t border-[#E8DFD5] flex flex-col gap-2 flex-shrink-0">
                     <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.22em] text-[#6E645A]/80 font-medium">
-                      Maison Concierge
+                      Concierge
                     </span>
                     <div className="flex items-center gap-4 sm:gap-6">
                       {MOBILE_SOCIAL_LINKS.map((social) => (

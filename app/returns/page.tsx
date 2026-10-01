@@ -38,7 +38,7 @@ export default function ReturnsPolicyPage() {
         <div className="flex flex-col items-start gap-2 border-b border-[#E8DFD5] pb-8 mb-10">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.3em] font-semibold text-[#7D2130] bg-[#F3ECE3] px-3.5 py-1 rounded-full border border-[#E8DFD5]">
             <RefreshCw className="w-3.5 h-3.5 text-[#C9A96E]" />
-            <span>Maison Guarantee &amp; Exchanges</span>
+            <span>Quality Guarantee &amp; Exchanges</span>
           </div>
           <h1 className="font-hero text-3xl sm:text-5xl uppercase tracking-[0.08em] text-[#2A221E] mt-2">
             Returns &amp; Exchange Policy

@@ -5,7 +5,7 @@ import { getProducts } from '@/lib/product.service';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_METADATA.url;
 
-  // Static Maison routes
+  // Static routes
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,

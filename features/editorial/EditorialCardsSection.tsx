@@ -148,7 +148,7 @@ export const EditorialCardsSection: React.FC = () => {
             EDITORIAL INSIGHTS
           </span>
           <h2 className="font-hero text-3xl sm:text-4xl lg:text-5xl font-[500] tracking-[0.06em] uppercase text-[#382C26]">
-            Maison Atelier Highlights
+            Atelier Highlights
           </h2>
           <p className="font-sans text-sm text-[#736357] mt-2 font-normal leading-relaxed">
             Explore curated offers, fabric craftsmanship, regional origins, and fabric care secrets.

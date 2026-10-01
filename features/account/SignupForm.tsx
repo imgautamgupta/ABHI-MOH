@@ -117,7 +117,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccessSignup, classNa
             />
           </div>
 
-          {/* Verify & Enter Maison Button */}
+          {/* Verify & Create Account Button */}
           <button
             type="submit"
             className="w-full py-3.5 mt-2 rounded-full bg-gradient-to-r from-[#8C1C2A] via-[#A32233] to-[#7A1523] text-[#F6ECE1] border border-[#C89D5C]/35 font-medium text-xs uppercase tracking-[0.2em] transition-all duration-300 ease-silk flex items-center justify-center gap-2 cursor-pointer shadow-md hover:shadow-lg"

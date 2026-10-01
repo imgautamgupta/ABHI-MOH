@@ -202,7 +202,7 @@ const CheckoutContent: React.FC = () => {
                 </span>
               )}
               <p className="font-sans text-sm text-[#736357] font-light leading-relaxed">
-                Thank you for your bespoke order. Our Maison Concierge will reach out within 24 hours with your dispatch and tracking details.
+                Thank you for your bespoke order. Our Concierge will reach out within 24 hours with your dispatch and tracking details.
               </p>
               <div className="w-12 h-[1px] bg-[#C9A96E]/50" />
               <p className="text-xs text-[#736357]/70 uppercase tracking-widest">

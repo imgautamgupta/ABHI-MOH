@@ -115,7 +115,7 @@ export default function TermsOfServicePage() {
               For formal legal communications or general inquiries regarding our client terms, reach us at:
             </p>
             <div className="p-4 rounded-xl bg-white border border-[#E8DFD5] text-xs leading-relaxed">
-              <p className="font-medium text-[#2A221E]">ABHI-MOH Maison Concierge &amp; Legal Desk</p>
+              <p className="font-medium text-[#2A221E]">ABHI-MOH Concierge &amp; Legal Desk</p>
               <p className="text-[#736357]">Email: <a href="mailto:concierge@abhi-moh.com" className="text-[#7D2130] underline font-medium">concierge@abhi-moh.com</a></p>
               <p className="text-[#736357]">Flagship Studio: New Delhi &amp; Mumbai, India</p>
             </div>

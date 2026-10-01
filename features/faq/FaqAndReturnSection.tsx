@@ -112,7 +112,7 @@ export const FaqAndReturnSection: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-medium tracking-[0.25em] uppercase text-[#7D2130] block">
-                    MAISON PROMISE
+                    OUR PROMISE
                   </span>
                   <h3 className="font-hero text-xl font-medium uppercase text-[#382C26]">
                     Return & Exchange Policy

@@ -40,8 +40,8 @@ export const CollectionsGrid: React.FC<CollectionsGridProps> = ({ products, onRe
   return (
     <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 xl:gap-12 items-start">
       <AnimatePresence mode="popLayout">
-        {products.map((product) => (
-          <HangingCard key={product.id} product={product} />
+        {products.map((product, index) => (
+          <HangingCard key={product.id} product={product} priority={index < 4} />
         ))}
       </AnimatePresence>
     </div>

@@ -78,21 +78,25 @@ export const MembershipSection: React.FC<MembershipSectionProps> = ({ membership
             </div>
 
             <p className="font-sans text-xs sm:text-sm font-light text-[#E8DFD5] max-w-lg leading-relaxed">
-              {discountPercent > 0
-                ? `You enjoy an exclusive ${discountPercent}% personal member discount on all eligible handloom sarees, automatically calculated during checkout.`
-                : 'Complete 2 successful orders to unlock Silver Membership and an exclusive 3% personal client discount.'}
+              {tier === 'GOLD'
+                ? 'As a Gold Patron, you have unlocked our highest tier of artisanal privileges, priority concierge, and bespoke loom reservations.'
+                : tier === 'SILVER'
+                ? 'As a Silver Member, you have unlocked early collection access, priority weaver advisory, and bespoke privileges.'
+                : 'Complete 2 successful orders to unlock Silver Membership and exclusive bespoke client privileges.'}
             </p>
           </div>
 
-          {/* Discount Pill */}
+          {/* Tier Status Pill */}
           <div className="p-6 rounded-2xl bg-[#FFFDFC]/10 backdrop-blur-md border border-[#C89D5C]/40 text-center flex flex-col items-center justify-center min-w-[180px]">
             <span className="text-[10px] uppercase tracking-widest text-[#E5C388]">
-              Personal Discount
+              Tier Milestone
             </span>
-            <span className="font-hero text-4xl text-[#FAF7F2] font-semibold mt-1">
-              {discountPercent}%
+            <span className="font-hero text-2xl text-[#FAF7F2] font-semibold mt-1">
+              {tierName}
             </span>
-            <span className="text-[10px] text-[#E8DFD5] mt-1">Server-Validated</span>
+            <span className="text-[10px] text-[#E8DFD5] mt-1 font-mono">
+              {successfulOrderCount} / {tier === 'GOLD' ? '4' : '2'} Orders
+            </span>
           </div>
         </div>
       </div>
@@ -157,7 +161,7 @@ export const MembershipSection: React.FC<MembershipSectionProps> = ({ membership
               )}
             </div>
             <p className="text-xs text-[#6E645A] font-light">
-              3% personal discount, early collection access, priority weaver advisory.
+              Early collection access, priority master weaver advisory, and bespoke privileges.
             </p>
             <div className="pt-2 border-t border-[#E8DFD5] text-[11px] font-medium text-[#7A1C28]">
               2 Successful Orders
@@ -186,7 +190,7 @@ export const MembershipSection: React.FC<MembershipSectionProps> = ({ membership
               )}
             </div>
             <p className="text-xs text-[#6E645A] font-light">
-              5% personal discount, rare heritage previews, complimentary velvet gift box packaging.
+              Rare heritage previews, private bridal consultations, and complimentary archival velvet gift caskets.
             </p>
             <div className="pt-2 border-t border-[#E8DFD5] text-[11px] font-medium text-[#7A1C28]">
               4 Successful Orders

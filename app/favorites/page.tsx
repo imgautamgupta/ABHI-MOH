@@ -1,14 +1,36 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ArrowRight } from 'lucide-react';
+import { useAuth } from '@/features/account/AuthContext';
 import { useFavorites } from '@/features/favorites/FavoritesContext';
 import { HangingCard } from '@/features/collections/components/HangingCard';
 
 export default function FavoritesPage() {
+  const router = useRouter();
+  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { favoriteProducts, totalFavoriteCount, isLoaded } = useFavorites();
+
+  // Guard: Redirect to /login if unauthenticated
+  useEffect(() => {
+    if (!isAuthLoading && !isLoggedIn) {
+      router.replace('/login?returnTo=%2Ffavorites');
+    }
+  }, [isAuthLoading, isLoggedIn, router]);
+
+  if (isAuthLoading || !isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col items-center justify-center pt-24 font-satoshi text-[#2A221E]">
+        <div className="w-10 h-10 rounded-full border-2 border-[#7A1C28]/20 border-t-[#7A1C28] animate-spin mb-4" />
+        <p className="font-hero text-xs tracking-[0.25em] uppercase text-[#7A1C28]">
+          Verifying Client Session...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full bg-[#FAF7F2] text-[#382C26] min-h-screen pt-[110px] lg:pt-[140px] pb-32 px-5 sm:px-10 lg:px-16 max-w-[1800px] mx-auto font-satoshi overflow-hidden">

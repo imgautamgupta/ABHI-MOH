@@ -11,6 +11,7 @@ import { CheckoutStep } from './checkout.types';
 import { cn } from '@/lib/utils';
 import { ShieldCheck, Lock, ArrowRight, ShoppingBag, Loader2, Crown, Award, Sparkles } from 'lucide-react';
 import { MembershipDetails } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export interface OrderSummaryProps {
   selectedBoxId?: string;
@@ -152,11 +153,18 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div key={item.id} className="flex gap-3 pt-3 first:pt-0 items-center">
               <div className="relative w-14 h-18 aspect-[3/4] bg-[#FAF7F2] rounded-lg overflow-hidden border border-[#E8DFD5] flex-shrink-0">
                 <Image
-                  src={item.imageSrc}
+                  src={wixThumbImage(item.imageSrc)}
                   alt={item.name}
                   fill
+                  unoptimized={isWixImage(item.imageSrc)}
                   sizes="60px"
                   className="object-contain p-1 drop-shadow-sm"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                      target.src = SOFT_IVORY_PLACEHOLDER;
+                    }
+                  }}
                 />
               </div>
 

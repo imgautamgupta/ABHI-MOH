@@ -1,4 +1,5 @@
 import { wixClient } from './wix';
+import { getWixImageUrl } from './wixImage';
 import type { SareeProduct, BadgeType, AdditionalInfoSection } from '@/features/collections/components/hanging-card.types';
 
 // ---------------------------------------------------------------------------
@@ -98,13 +99,18 @@ export function mapWixProduct(
 
   // ── Images ───────────────────────────────────────────────────────────────
   const images: string[] = [];
-  const mainUrl: string | undefined = product.media?.mainMedia?.image?.url;
-  if (mainUrl) images.push(mainUrl);
+  const rawMainUrl: string | undefined = product.media?.mainMedia?.image?.url;
+  if (rawMainUrl) {
+    images.push(getWixImageUrl(rawMainUrl, { width: 1200, height: 1200, quality: 80, format: 'webp' }));
+  }
   const items: { image?: { url?: string }; mediaType?: string }[] =
     product.media?.items ?? [];
   for (const item of items) {
-    const url = item.image?.url;
-    if (url && !images.includes(url)) images.push(url);
+    const rawUrl = item.image?.url;
+    if (rawUrl) {
+      const optimizedUrl = getWixImageUrl(rawUrl, { width: 1200, height: 1200, quality: 80, format: 'webp' });
+      if (!images.includes(optimizedUrl)) images.push(optimizedUrl);
+    }
   }
   if (images.length === 0) {
     images.push('/assets/sarees/saree-maroon.png'); // design fallback

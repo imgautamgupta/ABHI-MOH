@@ -8,6 +8,7 @@ import { Badge } from './Badge';
 import { FavoriteButton } from './FavoriteButton';
 import { BadgeType, SareeProduct } from './hanging-card.types';
 import { cn } from '@/lib/utils';
+import { isWixImage, wixDetailImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export interface ProductDetailGalleryProps {
   product: SareeProduct;
@@ -96,11 +97,18 @@ export const ProductDetailGallery: React.FC<ProductDetailGalleryProps> = ({
               >
                 <div className="relative w-full h-full">
                   <Image
-                    src={img}
+                    src={wixThumbImage(img)}
                     alt={`${title} view ${idx + 1}`}
                     fill
+                    unoptimized={isWixImage(img)}
                     sizes="(max-width: 640px) 64px, 80px"
                     className="object-contain object-center"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                        target.src = SOFT_IVORY_PLACEHOLDER;
+                      }
+                    }}
                   />
                 </div>
               </button>
@@ -159,15 +167,22 @@ export const ProductDetailGallery: React.FC<ProductDetailGalleryProps> = ({
                 className="relative w-full h-full"
               >
                 <Image
-                  src={activeImage}
+                  src={wixDetailImage(activeImage)}
                   alt={title}
                   fill
                   priority
+                  unoptimized={isWixImage(activeImage)}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className={cn(
                     'object-contain object-center transition-transform duration-200 ease-out pointer-events-none',
                     isZoomed && 'hidden lg:block'
                   )}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                      target.src = SOFT_IVORY_PLACEHOLDER;
+                    }
+                  }}
                   style={
                     isZoomed
                       ? {
@@ -249,9 +264,15 @@ export const ProductDetailGallery: React.FC<ProductDetailGalleryProps> = ({
             <div className="relative w-full max-w-4xl max-h-[85vh] aspect-[3/4] flex items-center justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={activeImage}
+                src={wixDetailImage(activeImage)}
                 alt={title}
                 className="max-w-full max-h-[85vh] object-contain rounded-lg"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                    target.src = SOFT_IVORY_PLACEHOLDER;
+                  }
+                }}
               />
             </div>
 

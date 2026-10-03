@@ -7,6 +7,7 @@ import { Trash2 } from 'lucide-react';
 import { CartItemModel } from './cart.types';
 import { QuantitySelector } from './QuantitySelector';
 import { CART_ITEM_ANIMATION } from './cart.animations';
+import { wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export interface CartItemProps {
   item: CartItemModel;
@@ -18,7 +19,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRe
   const lineSubtotal = item.priceNumber * item.quantity;
   const formattedLineSubtotal = `₹${lineSubtotal.toLocaleString('en-IN')}`;
 
-  const safeImage = item.imageSrc || '/assets/sarees/saree-maroon.png';
+  const safeImage = wixThumbImage(item.imageSrc) || '/assets/sarees/saree-maroon.png';
 
   return (
     <motion.div
@@ -35,6 +36,12 @@ export const CartItem: React.FC<CartItemProps> = ({ item, onUpdateQuantity, onRe
           src={safeImage}
           alt={item.name}
           className="w-full h-full object-contain object-center"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+              target.src = SOFT_IVORY_PLACEHOLDER;
+            }
+          }}
         />
       </div>
 

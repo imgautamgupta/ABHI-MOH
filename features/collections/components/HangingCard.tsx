@@ -17,6 +17,7 @@ export interface HangingCardProps {
   onFavoriteToggle?: (id: string, isFav: boolean) => void;
   onAddToBag?: (id: string) => void;
   className?: string;
+  priority?: boolean;
 }
 
 export const HangingCard: React.FC<HangingCardProps> = ({
@@ -24,6 +25,7 @@ export const HangingCard: React.FC<HangingCardProps> = ({
   onFavoriteToggle,
   onAddToBag,
   className,
+  priority = false,
 }) => {
   const { addToCart } = useCart();
   const { isFavorite } = useFavorites();
@@ -83,6 +85,7 @@ export const HangingCard: React.FC<HangingCardProps> = ({
             title={product.name}
             badges={product.badges}
             isFavorite={isFav}
+            priority={priority}
             onFavoriteToggle={(newFav) =>
               onFavoriteToggle && onFavoriteToggle(product.id, newFav)
             }
@@ -96,6 +99,7 @@ export const HangingCard: React.FC<HangingCardProps> = ({
           title={product.name}
           badges={product.badges}
           isFavorite={isFav}
+          priority={priority}
           onFavoriteToggle={(newFav) =>
             onFavoriteToggle && onFavoriteToggle(product.id, newFav)
           }

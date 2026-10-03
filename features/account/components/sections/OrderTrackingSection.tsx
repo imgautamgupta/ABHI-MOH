@@ -15,6 +15,7 @@ import {
   Search,
 } from 'lucide-react';
 import { ClientOrder, TrackingStageId } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 interface OrderTrackingSectionProps {
   orders: ClientOrder[];
@@ -234,10 +235,17 @@ export const OrderTrackingSection: React.FC<OrderTrackingSectionProps> = ({
             {items[0]?.image && (
               <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-[#FFFDFC] border border-[#E8DFD5] shrink-0">
                 <Image
-                  src={items[0].image}
+                  src={wixThumbImage(items[0].image)}
                   alt={items[0].name}
                   fill
+                  unoptimized={isWixImage(items[0].image)}
                   className="object-contain p-1"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                      target.src = SOFT_IVORY_PLACEHOLDER;
+                    }
+                  }}
                 />
               </div>
             )}

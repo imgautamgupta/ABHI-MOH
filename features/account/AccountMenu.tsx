@@ -45,7 +45,12 @@ export const AccountMenu: React.FC<AccountMenuProps> = ({ isOpen, onClose, class
   }, [isOpen, onClose]);
 
   const handleInitiateLogin = () => {
-    login('/account');
+    onClose();
+    const currentPath =
+      typeof window !== 'undefined'
+        ? window.location.pathname + window.location.search
+        : '/account';
+    login(currentPath);
   };
 
   return (

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Package, ShieldCheck, MapPin, Gift, Clock, Truck, ArrowRight } from 'lucide-react';
 import { ClientOrder } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER, FALLBACK_PRODUCT_IMAGE } from '@/lib/wixImage';
 
 interface OrderDetailsModalProps {
   order: ClientOrder | null;
@@ -71,7 +72,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
           {/* Scrollable Content */}
           <div className="p-6 overflow-y-auto space-y-6">
             {/* Status Summary Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className={`grid grid-cols-2 ${order.returnEligibility.isEligible ? 'sm:grid-cols-4' : 'sm:grid-cols-3'} gap-3`}>
               <div className="p-3 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
                 <span className="text-[10px] uppercase tracking-widest text-[#6E645A]">Order Date</span>
                 <p className="font-medium text-[#2A221E] mt-0.5">
@@ -98,14 +99,14 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 </p>
               </div>
 
-              <div className="p-3 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
-                <span className="text-[10px] uppercase tracking-widest text-[#6E645A]">Return Window</span>
-                <p className="font-medium text-[#2A221E] mt-0.5">
-                  {order.returnEligibility.isEligible
-                    ? `${order.returnEligibility.daysRemaining} Days Left`
-                    : 'Closed'}
-                </p>
-              </div>
+              {order.returnEligibility.isEligible && (
+                <div className="p-3 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
+                  <span className="text-[10px] uppercase tracking-widest text-[#6E645A]">Return Window</span>
+                  <p className="font-medium text-emerald-700 mt-0.5">
+                    {order.returnEligibility.daysRemaining} Days Left
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Loyalty Milestone Contribution Banner */}
@@ -133,10 +134,17 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                   <div key={item.id} className="p-4 flex items-center gap-4">
                     <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#E8DFD5] shrink-0">
                       <Image
-                        src={item.image}
+                        src={wixThumbImage(item.image) || FALLBACK_PRODUCT_IMAGE}
                         alt={item.name}
                         fill
+                        unoptimized={isWixImage(item.image)}
                         className="object-contain p-1"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                            target.src = SOFT_IVORY_PLACEHOLDER;
+                          }
+                        }}
                       />
                     </div>
                     <div className="flex-1 min-w-0">
@@ -194,7 +202,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
 
             {/* Shipping & Delivery Address */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="p-4 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
+              <div className={`p-4 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs ${!order.tracking.trackingNumber ? 'sm:col-span-2' : ''}`}>
                 <div className="flex items-center gap-2 text-[#7A1C28] font-semibold uppercase tracking-wider mb-2">
                   <MapPin className="w-3.5 h-3.5" />
                   <span>Delivery Address</span>
@@ -210,15 +218,17 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                 <p className="text-[#6E645A] mt-1">Phone: {order.shippingAddress.phone}</p>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
-                <div className="flex items-center gap-2 text-[#7A1C28] font-semibold uppercase tracking-wider mb-2">
-                  <Truck className="w-3.5 h-3.5" />
-                  <span>Carrier Logistics</span>
+              {Boolean(order.tracking?.trackingNumber) && (
+                <div className="p-4 rounded-xl bg-[#FFFDFC] border border-[#E8DFD5] text-xs">
+                  <div className="flex items-center gap-2 text-[#7A1C28] font-semibold uppercase tracking-wider mb-2">
+                    <Truck className="w-3.5 h-3.5" />
+                    <span>Carrier Logistics</span>
+                  </div>
+                  <p className="font-semibold text-[#2A221E]">{order.tracking.carrier || 'Courier'}</p>
+                  <p className="font-mono text-[#6E645A] mt-0.5">AWB: {order.tracking.trackingNumber}</p>
+                  <p className="text-[#6E645A] mt-1">Status: {order.deliveryStatus}</p>
                 </div>
-                <p className="font-semibold text-[#2A221E]">{order.tracking.carrier}</p>
-                <p className="font-mono text-[#6E645A] mt-0.5">AWB: {order.tracking.trackingNumber}</p>
-                <p className="text-[#6E645A] mt-1">Status: {order.deliveryStatus}</p>
-              </div>
+              )}
             </div>
 
             {/* Gift Experience details if available */}
@@ -258,7 +268,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
             </div>
 
             <div className="flex items-center gap-3">
-              {onTrackOrder && (
+              {onTrackOrder && Boolean(order.tracking?.trackingNumber) && (
                 <button
                   type="button"
                   onClick={() => {

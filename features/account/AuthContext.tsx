@@ -52,8 +52,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchCurrentMember]);
 
   const login = useCallback((returnUrl?: string) => {
-    const destination = returnUrl || (typeof window !== 'undefined' ? window.location.pathname : '/account');
-    window.location.href = `/api/auth/login?returnUrl=${encodeURIComponent(destination)}`;
+    const currentPath =
+      typeof window !== 'undefined'
+        ? window.location.pathname + window.location.search
+        : '/account';
+    const destination = returnUrl || currentPath || '/account';
+
+    // Validate relative path on our own site
+    const safeDestination =
+      destination.startsWith('/') &&
+      !destination.startsWith('//') &&
+      !destination.startsWith('/\\')
+        ? destination
+        : '/account';
+
+    const loginTarget = `/login?returnTo=${encodeURIComponent(safeDestination)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = loginTarget;
+    }
   }, []);
 
   const logout = useCallback(async () => {

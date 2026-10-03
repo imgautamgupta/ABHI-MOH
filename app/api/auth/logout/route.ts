@@ -37,6 +37,8 @@ async function handleLogout(request: NextRequest) {
 
   // Clear token cookies
   response.cookies.delete(WIX_TOKENS_COOKIE);
+  response.cookies.delete('wix_access_token');
+  response.cookies.delete('wix_refresh_token');
   response.cookies.delete(WIX_OAUTH_DATA_COOKIE);
 
   return response;

@@ -15,6 +15,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { ClientOrder, ReturnExchangeRequest } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 interface ReturnsExchangesSectionProps {
   orders: ClientOrder[];
@@ -116,10 +117,17 @@ export const ReturnsExchangesSection: React.FC<ReturnsExchangesSectionProps> = (
                   {order.items[0]?.image && (
                     <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#E8DFD5] shrink-0">
                       <Image
-                        src={order.items[0].image}
+                        src={wixThumbImage(order.items[0].image)}
                         alt={order.items[0].name}
                         fill
+                        unoptimized={isWixImage(order.items[0].image)}
                         className="object-contain p-1"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                            target.src = SOFT_IVORY_PLACEHOLDER;
+                          }
+                        }}
                       />
                     </div>
                   )}

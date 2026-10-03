@@ -71,8 +71,9 @@ export default function RootLayout({
       lang="en"
       className={`${bodoni.variable} ${cormorant.variable} ${inter.variable}`}
       style={{ colorScheme: 'light' }}
+      suppressHydrationWarning
     >
-      <body className="font-sans antialiased bg-[#FAF7F2] text-[#2A221E]">
+      <body className="font-sans antialiased bg-[#FAF7F2] text-[#2A221E]" suppressHydrationWarning>
         <AuthProvider>
           <CartProvider>
             <FavoritesProvider>

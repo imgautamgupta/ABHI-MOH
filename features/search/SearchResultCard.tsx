@@ -8,6 +8,7 @@ import { SareeProduct } from '@/features/collections/components/hanging-card.typ
 import { useFavorites } from '@/features/favorites/FavoritesContext';
 import { Badge } from '@/features/collections/components/Badge';
 import { cn } from '@/lib/utils';
+import { wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export interface SearchResultCardProps {
   product: SareeProduct;
@@ -19,7 +20,7 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({ product, onS
   const isFav = isFavorite(product.id);
 
   const productUrl = `/collections/${product.slug || product.id}`;
-  const displayImage = product.images?.[0] || '/assets/sarees/saree-maroon.png';
+  const displayImage = wixThumbImage(product.images?.[0]) || '/assets/sarees/saree-maroon.png';
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,6 +46,12 @@ export const SearchResultCard: React.FC<SearchResultCardProps> = ({ product, onS
           src={displayImage}
           alt={product.name}
           className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-105"
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+              target.src = SOFT_IVORY_PLACEHOLDER;
+            }
+          }}
         />
 
         {/* Badges Overlay */}

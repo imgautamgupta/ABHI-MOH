@@ -15,6 +15,7 @@ import { DRAWER_OVERLAY_VARIANTS, DRAWER_PANEL_VARIANTS } from './navbar.animati
 import { useCart } from '@/features/cart/CartContext';
 import { useFavorites } from '@/features/favorites/FavoritesContext';
 import { useSearch } from '@/features/search/SearchContext';
+import { useAuth } from '@/features/account/AuthContext';
 
 import Image from 'next/image';
 
@@ -37,6 +38,7 @@ export const MobileNav: React.FC = () => {
   const { openSearch } = useSearch();
   const { toggleCart, totalItemCount } = useCart();
   const { totalFavoriteCount, isLoaded } = useFavorites();
+  const { isLoggedIn, login } = useAuth();
 
   useEffect(() => {
     setMounted(true);
@@ -146,14 +148,23 @@ export const MobileNav: React.FC = () => {
         </IconButton>
 
         {/* Account */}
-        <Link href="/account" aria-label="Account" className="inline-flex">
-          <IconButton
-            ariaLabel="Account"
-            className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 p-1.5"
-          >
-            <User className="w-4 h-4 min-[360px]:w-[17px] min-[360px]:h-[17px] text-primary-text" />
-          </IconButton>
-        </Link>
+        <IconButton
+          ariaLabel="Account"
+          onClick={() => {
+            if (!isLoggedIn) {
+              const currentPath =
+                typeof window !== 'undefined'
+                  ? window.location.pathname + window.location.search
+                  : '/account';
+              login(currentPath);
+            } else {
+              window.location.href = '/account';
+            }
+          }}
+          className="w-8 h-8 min-[360px]:w-9 min-[360px]:h-9 p-1.5"
+        >
+          <User className="w-4 h-4 min-[360px]:w-[17px] min-[360px]:h-[17px] text-primary-text" />
+        </IconButton>
       </div>
 
       {/* ══ FULL-HEIGHT MOBILE NAVIGATION DRAWER (Portaled to document.body for true full-screen overlay) ══ */}
@@ -225,22 +236,34 @@ export const MobileNav: React.FC = () => {
                     className="flex flex-col justify-center gap-2 sm:gap-3 flex-1 my-2 overflow-hidden"
                     aria-label="Mobile Navigation Links"
                   >
-                    {MOBILE_DRAWER_LINKS.map((item, index) => (
-                      <motion.div key={item.label} variants={DRAWER_ITEM_VARIANTS} className="w-full">
-                        <Link
-                          href={item.href}
-                          onClick={() => setIsDrawerOpen(false)}
-                          className="flex items-center gap-3 w-full py-2.5 sm:py-3 border-b border-[#E8DFD5]/50 text-sm sm:text-base font-light uppercase tracking-[0.16em] text-[#2A221E] hover:text-[#7A1C28] transition-colors duration-300 min-h-[44px]"
-                        >
-                          <span className="text-[11px] font-medium text-[#C9A96E] tracking-widest w-5 text-right flex-shrink-0">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          {item.label === 'Favorites' && <Heart className="w-4 h-4 text-[#7A1C28] flex-shrink-0" />}
-                          {item.label === 'Account'   && <User className="w-4 h-4 text-[#7A1C28] flex-shrink-0" />}
-                          <span className="truncate font-normal">{item.label}</span>
-                        </Link>
-                      </motion.div>
-                    ))}
+                    {MOBILE_DRAWER_LINKS.map((item, index) => {
+                      const isAccount = item.label === 'Account';
+                      const currentPath =
+                        typeof window !== 'undefined'
+                          ? window.location.pathname + window.location.search
+                          : '/account';
+                      const targetHref =
+                        isAccount && !isLoggedIn
+                          ? `/login?returnTo=${encodeURIComponent(currentPath)}`
+                          : item.href;
+
+                      return (
+                        <motion.div key={item.label} variants={DRAWER_ITEM_VARIANTS} className="w-full">
+                          <Link
+                            href={targetHref}
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="flex items-center gap-3 w-full py-2.5 sm:py-3 border-b border-[#E8DFD5]/50 text-sm sm:text-base font-light uppercase tracking-[0.16em] text-[#2A221E] hover:text-[#7A1C28] transition-colors duration-300 min-h-[44px]"
+                          >
+                            <span className="text-[11px] font-medium text-[#C9A96E] tracking-widest w-5 text-right flex-shrink-0">
+                              {String(index + 1).padStart(2, '0')}
+                            </span>
+                            {item.label === 'Favorites' && <Heart className="w-4 h-4 text-[#7A1C28] flex-shrink-0" />}
+                            {item.label === 'Account'   && <User className="w-4 h-4 text-[#7A1C28] flex-shrink-0" />}
+                            <span className="truncate font-normal">{item.label}</span>
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
                   </motion.nav>
 
                   {/* Bottom Socials & Concierge Footer */}

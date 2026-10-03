@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   User,
   Package,
@@ -13,8 +13,6 @@ import {
   ShieldCheck,
   FileText,
   LogOut,
-  ChevronDown,
-  Sliders,
 } from 'lucide-react';
 import { AccountTabKey, AccountDossier } from '@/lib/account/types';
 import { cn } from '@/lib/utils';
@@ -24,7 +22,6 @@ interface AccountSidebarProps {
   onSelectTab: (tab: AccountTabKey) => void;
   dossier: AccountDossier;
   onLogout: () => void;
-  onSelectTestScenario?: (scenario: string) => void;
 }
 
 export const AccountSidebar: React.FC<AccountSidebarProps> = ({
@@ -32,9 +29,7 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
   onSelectTab,
   dossier,
   onLogout,
-  onSelectTestScenario,
 }) => {
-  const [showScenarioTester, setShowScenarioTester] = useState(false);
 
   const navItems = [
     { key: 'profile' as AccountTabKey, label: 'Profile Dossier', icon: User },
@@ -144,58 +139,6 @@ export const AccountSidebar: React.FC<AccountSidebarProps> = ({
           </button>
         </div>
       </div>
-
-      {/* QA SCENARIO TESTER (For seamless testing of all 17 QA scenarios) */}
-      {onSelectTestScenario && (
-        <div className="bg-[#FAF7F2] border border-[#C89D5C]/40 rounded-2xl p-4 text-xs space-y-2">
-          <button
-            type="button"
-            onClick={() => setShowScenarioTester(!showScenarioTester)}
-            className="w-full flex items-center justify-between text-[#7A1C28] font-semibold uppercase tracking-wider text-[10px] cursor-pointer"
-          >
-            <span className="flex items-center gap-1.5">
-              <Sliders className="w-3.5 h-3.5" />
-              <span>QA Scenario Simulator</span>
-            </span>
-            <ChevronDown
-              className={cn(
-                'w-3.5 h-3.5 transition-transform duration-200',
-                showScenarioTester && 'rotate-180'
-              )}
-            />
-          </button>
-
-          {showScenarioTester && (
-            <div className="pt-2 space-y-1.5 border-t border-[#E8DFD5]">
-              <p className="text-[10px] text-[#6E645A] font-light">
-                Switch client data to verify loyalty tiers, returns, and order rules:
-              </p>
-              <div className="grid grid-cols-1 gap-1 pt-1">
-                {[
-                  { id: 'new_user', label: '1. New User (0 orders)' },
-                  { id: '1_order', label: '2. User with 1 order' },
-                  { id: '2_orders_silver', label: '3. Silver Tier (2 orders)' },
-                  { id: '3_orders', label: '4. Silver Tier (3 orders)' },
-                  { id: '4_orders_gold', label: '5. Gold Tier (4 orders)' },
-                  { id: 'returned_order', label: '6. Returned Order (Non-milestone)' },
-                  { id: 'exchanged_order', label: '7. Exchanged Order' },
-                  { id: 'active_return_window', label: '8. Active Return Window' },
-                  { id: 'expired_return_window', label: '9. Expired Return Window' },
-                ].map((sc) => (
-                  <button
-                    key={sc.id}
-                    type="button"
-                    onClick={() => onSelectTestScenario(sc.id)}
-                    className="w-full text-left px-2.5 py-1.5 rounded-lg bg-[#FFFDFC] hover:bg-[#7A1C28] hover:text-[#FAF7F2] text-[#2A221E] text-[11px] border border-[#E8DFD5] transition-colors cursor-pointer"
-                  >
-                    {sc.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
     </aside>
   );
 };

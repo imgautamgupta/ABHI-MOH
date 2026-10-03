@@ -15,6 +15,7 @@ import {
   Award,
 } from 'lucide-react';
 import { AccountDossier, AccountTabKey } from '@/lib/account/types';
+import { wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 interface ProfileSectionProps {
   dossier: AccountDossier;
@@ -114,7 +115,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
             {membership.tier === 'GOLD' ? 'Gold Patron' : membership.tier === 'SILVER' ? 'Silver Member' : 'Regular Client'}
           </p>
           <span className="text-[11px] text-[#6E645A] mt-0.5 block">
-            {membership.discountPercent > 0 ? `${membership.discountPercent}% Personal Discount Active` : 'Unlock Silver with 2 orders'}
+            {membership.tier === 'GOLD' ? 'Gold Privileges Active' : membership.tier === 'SILVER' ? 'Silver Privileges Active' : '0/2 progress to Silver'}
           </span>
         </div>
 
@@ -185,7 +186,7 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
                 Current Tier: {membership.tierName}
               </span>
               <span className="text-[#7A1C28] font-medium">
-                {membership.successfulOrderCount} / {membership.tier === 'GOLD' ? '4' : membership.tier === 'SILVER' ? '4' : '2'} Orders
+                {membership.successfulOrderCount} / {membership.tier === 'GOLD' ? '4' : '2'} Orders
               </span>
             </div>
 
@@ -201,24 +202,24 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
 
             <div className="flex items-center justify-between text-[11px] text-[#6E645A]">
               <span>Regular (0-1)</span>
-              <span>🥈 Silver (2) • 3% Off</span>
-              <span>🥇 Gold (4+) • 5% Off</span>
+              <span>🥈 Silver (2)</span>
+              <span>🥇 Gold (4+)</span>
             </div>
 
             {membership.nextTier ? (
               <p className="text-xs text-[#6E645A] font-light leading-relaxed bg-[#FAF7F2] p-3.5 rounded-xl border border-[#E8DFD5]">
-                <strong className="text-[#2A221E] font-medium">{membership.ordersNeededForNextTier} more successful {membership.ordersNeededForNextTier === 1 ? 'order' : 'orders'}</strong> needed to unlock <strong className="text-[#7A1C28] font-medium">{membership.nextTier} Member Privileges</strong> ({membership.nextTier === 'GOLD' ? '5%' : '3%'} personal discount, earlier collections access & complimentary gift packaging).
+                <strong className="text-[#2A221E] font-medium">{membership.ordersNeededForNextTier} more successful {membership.ordersNeededForNextTier === 1 ? 'order' : 'orders'}</strong> needed to unlock <strong className="text-[#7A1C28] font-medium">{membership.nextTier} Member Privileges</strong> (earlier collections access, priority weaver advisory & complimentary gift packaging).
               </p>
             ) : (
               <p className="text-xs text-emerald-800 font-light leading-relaxed bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-200">
-                You have achieved our highest <strong className="font-semibold">Gold Patron Tier</strong>. Enjoy 5% personal discounts, priority bridal consultations, and complimentary archival unboxing caskets with every commission.
+                You have achieved our highest <strong className="font-semibold">Gold Patron Tier</strong>. Enjoy priority bridal consultations, rare heritage previews, and complimentary archival unboxing caskets with every commission.
               </p>
             )}
           </div>
 
           <div className="pt-2 border-t border-[#E8DFD5] flex items-center justify-between">
             <span className="text-xs text-[#6E645A]">
-              Personal Member Discount: <strong className="text-[#7A1C28] font-semibold">{membership.discountPercent}%</strong>
+              Tier Privileges: <strong className="text-[#7A1C28] font-semibold">{membership.tierName}</strong>
             </span>
             <button
               type="button"
@@ -257,9 +258,15 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <div className="flex items-center gap-3.5">
                 <div className="relative w-14 h-18 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#E8DFD5] shrink-0">
                   <img
-                    src={recentOrder.items[0]?.image || '/assets/sarees/saree-maroon.png'}
+                    src={wixThumbImage(recentOrder.items[0]?.image) || '/assets/sarees/saree-maroon.png'}
                     alt="Saree"
                     className="w-full h-full object-contain p-1"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                        target.src = SOFT_IVORY_PLACEHOLDER;
+                      }
+                    }}
                   />
                 </div>
                 <div className="flex-1 min-w-0 text-xs">
@@ -276,17 +283,28 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               </div>
 
               <div className="pt-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (onSelectOrderForTracking) onSelectOrderForTracking(recentOrder.id);
-                    onNavigateTab('tracking');
-                  }}
-                  className="w-full py-2.5 rounded-full bg-[#F3ECE3] hover:bg-[#E8DFD5] text-[#2A221E] text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
-                >
-                  <span>Track Status</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                {Boolean(recentOrder.tracking?.trackingNumber) ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (onSelectOrderForTracking) onSelectOrderForTracking(recentOrder.id);
+                      onNavigateTab('tracking');
+                    }}
+                    className="w-full py-2.5 rounded-full bg-[#F3ECE3] hover:bg-[#E8DFD5] text-[#2A221E] text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  >
+                    <span>Track Status</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onNavigateTab('orders')}
+                    className="w-full py-2.5 rounded-full bg-[#FAF7F2] hover:bg-[#F3ECE3] text-[#2A221E] text-xs uppercase tracking-widest font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer border border-[#E8DFD5]"
+                  >
+                    <span>View Commission</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
             </div>
           ) : (
@@ -294,10 +312,10 @@ export const ProfileSection: React.FC<ProfileSectionProps> = ({
               <p className="text-xs text-[#6E645A] font-light">No commissions placed yet.</p>
               <button
                 type="button"
-                onClick={() => (window.location.href = '/collections')}
-                className="mt-3 text-xs uppercase tracking-widest text-[#7A1C28] font-semibold underline"
+                onClick={() => onNavigateTab('orders')}
+                className="mt-3 text-xs uppercase tracking-widest text-[#7A1C28] font-semibold underline cursor-pointer"
               >
-                Browse Collections
+                Browse Orders
               </button>
             </div>
           )}

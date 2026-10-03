@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '@/features/account/AuthContext';
 import { CheckoutStep, InformationData, DeliveryData, GiftExperienceData } from './checkout.types';
 import { Stepper } from './Stepper';
 import { Information } from './Information';
@@ -36,7 +37,9 @@ const EMPTY_GIFT: GiftExperienceData = {
 };
 
 const CheckoutContent: React.FC = () => {
+  const router = useRouter();
   const searchParams = useSearchParams();
+  const { isLoggedIn, isLoading: isAuthLoading } = useAuth();
   const { items, clearCart } = useCart();
   const [currentStep, setCurrentStep] = useState<CheckoutStep>(1);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -63,6 +66,13 @@ const CheckoutContent: React.FC = () => {
       setCancelNotice('Your checkout session was cancelled. Your items remain safely in your shopping bag.');
     }
   }, [searchParams, clearCart]);
+
+  // Guard: Redirect to /login if unauthenticated
+  useEffect(() => {
+    if (!isAuthLoading && !isLoggedIn) {
+      router.replace('/login?returnTo=%2Fcheckout');
+    }
+  }, [isAuthLoading, isLoggedIn, router]);
 
   const isGiftMode = delivery.deliveryMode === 'gift';
 
@@ -145,6 +155,17 @@ const CheckoutContent: React.FC = () => {
 
   const selectedBox = GIFT_BOX_OPTIONS.find((b) => b.id === gift.selectedBoxId);
   const selectedRibbon = RIBBON_OPTIONS.find((r) => r.id === gift.selectedRibbonId);
+
+  if (isAuthLoading || !isLoggedIn) {
+    return (
+      <div className="w-full min-h-screen bg-[#FAF7F2] text-[#2A221E] pt-[120px] flex flex-col items-center justify-center font-satoshi">
+        <div className="w-10 h-10 rounded-full border-2 border-[#7A1C28]/20 border-t-[#7A1C28] animate-spin mb-4" />
+        <p className="font-hero text-xs tracking-[0.25em] uppercase text-[#7A1C28]">
+          Verifying Client Session...
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-screen bg-[#FAF7F2] text-[#2A221E] pt-[90px] md:pt-[110px] pb-28 font-satoshi select-none">

@@ -62,13 +62,20 @@ function AccountPageContent() {
 
   // Fetch dossier from API
   const fetchDossier = useCallback(async () => {
+    if (!isLoggedIn) {
+      setIsLoadingDossier(false);
+      return;
+    }
     try {
       setIsLoadingDossier(true);
       const res = await fetch('/api/account/profile', { cache: 'no-store' });
+      if (res.status === 401) {
+        router.replace('/login?returnTo=%2Faccount');
+        return;
+      }
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.dossier) {
-          // If Wix member info exists, merge name & email
           if (user) {
             data.dossier.name = user.name || data.dossier.name;
             data.dossier.email = user.email || data.dossier.email;
@@ -82,7 +89,7 @@ function AccountPageContent() {
     } finally {
       setIsLoadingDossier(false);
     }
-  }, [user]);
+  }, [user, isLoggedIn, router]);
 
   useEffect(() => {
     fetchDossier();
@@ -120,24 +127,12 @@ function AccountPageContent() {
     }
   };
 
-  const handleSelectTestScenario = async (scenario: string) => {
-    try {
-      setIsLoadingDossier(true);
-      const res = await fetch('/api/account/profile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'set_test_scenario', scenario }),
-      });
-      const data = await res.json();
-      if (data.success && data.dossier) {
-        setDossier(data.dossier);
-      }
-    } catch (e) {
-      console.error('Failed to set test scenario:', e);
-    } finally {
-      setIsLoadingDossier(false);
+  // Guard: Redirect to /login if unauthenticated
+  useEffect(() => {
+    if (!isAuthLoading && !isLoggedIn) {
+      router.replace('/login?returnTo=%2Faccount');
     }
-  };
+  }, [isAuthLoading, isLoggedIn, router]);
 
   // Loading state
   if (isAuthLoading || (isLoadingDossier && !dossier)) {
@@ -223,7 +218,6 @@ function AccountPageContent() {
               onSelectTab={handleSelectTab}
               dossier={activeDossier}
               onLogout={logout}
-              onSelectTestScenario={handleSelectTestScenario}
             />
           </div>
 

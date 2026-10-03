@@ -1,16 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { accountDataStore } from '@/lib/account/account.service';
+import { getWixClient, WIX_TOKENS_COOKIE, type Tokens } from '@/lib/wix';
+import { userScopedDataStore } from '@/lib/account/account.service';
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId') || 'default_user';
+    const tokensCookie = request.cookies.get(WIX_TOKENS_COOKIE)?.value;
+    if (!tokensCookie) {
+      return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+    }
 
-    const dossier = accountDataStore.getDossier(userId);
-    return NextResponse.json({
-      success: true,
-      addresses: dossier.savedAddresses,
-    });
+    let tokens: Tokens;
+    try {
+      tokens = JSON.parse(tokensCookie);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid session.' }, { status: 401 });
+    }
+
+    const client = getWixClient(tokens);
+    const memberRes = await client.members.getCurrentMember();
+    const memberId = memberRes?.member?._id;
+
+    if (!memberId) {
+      return NextResponse.json({ success: false, error: 'Member not found.' }, { status: 401 });
+    }
+
+    const addresses = userScopedDataStore.getAddresses(memberId);
+    return NextResponse.json({ success: true, addresses });
   } catch (error) {
     console.error('Error fetching addresses:', error);
     return NextResponse.json({ success: false, error: 'Failed to retrieve addresses.' }, { status: 500 });
@@ -19,14 +34,34 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const tokensCookie = request.cookies.get(WIX_TOKENS_COOKIE)?.value;
+    if (!tokensCookie) {
+      return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    let tokens: Tokens;
+    try {
+      tokens = JSON.parse(tokensCookie);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid session.' }, { status: 401 });
+    }
+
+    const client = getWixClient(tokens);
+    const memberRes = await client.members.getCurrentMember();
+    const memberId = memberRes?.member?._id;
+
+    if (!memberId) {
+      return NextResponse.json({ success: false, error: 'Member not found.' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { address, userId = 'default_user' } = body;
+    const { address } = body;
 
     if (!address?.recipientName || !address?.addressLine1 || !address?.city || !address?.state || !address?.pincode) {
       return NextResponse.json({ success: false, error: 'All address fields are required.' }, { status: 400 });
     }
 
-    const saved = accountDataStore.addAddress(address, userId);
+    const saved = userScopedDataStore.addAddress(address, memberId);
     return NextResponse.json({ success: true, address: saved });
   } catch (error) {
     console.error('Error adding address:', error);
@@ -36,16 +71,36 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    const tokensCookie = request.cookies.get(WIX_TOKENS_COOKIE)?.value;
+    if (!tokensCookie) {
+      return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    let tokens: Tokens;
+    try {
+      tokens = JSON.parse(tokensCookie);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid session.' }, { status: 401 });
+    }
+
+    const client = getWixClient(tokens);
+    const memberRes = await client.members.getCurrentMember();
+    const memberId = memberRes?.member?._id;
+
+    if (!memberId) {
+      return NextResponse.json({ success: false, error: 'Member not found.' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { address, action, addressId, userId = 'default_user' } = body;
+    const { address, action, addressId } = body;
 
     if (action === 'set_default' && addressId) {
-      accountDataStore.setDefaultAddress(addressId, userId);
+      userScopedDataStore.setDefaultAddress(addressId, memberId);
       return NextResponse.json({ success: true, message: 'Default address updated.' });
     }
 
     if (address && address.id) {
-      const ok = accountDataStore.updateAddress(address, userId);
+      const ok = userScopedDataStore.updateAddress(address, memberId);
       return NextResponse.json({ success: ok, address });
     }
 
@@ -58,15 +113,34 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    const tokensCookie = request.cookies.get(WIX_TOKENS_COOKIE)?.value;
+    if (!tokensCookie) {
+      return NextResponse.json({ success: false, error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    let tokens: Tokens;
+    try {
+      tokens = JSON.parse(tokensCookie);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid session.' }, { status: 401 });
+    }
+
+    const client = getWixClient(tokens);
+    const memberRes = await client.members.getCurrentMember();
+    const memberId = memberRes?.member?._id;
+
+    if (!memberId) {
+      return NextResponse.json({ success: false, error: 'Member not found.' }, { status: 401 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const addressId = searchParams.get('id');
-    const userId = searchParams.get('userId') || 'default_user';
 
     if (!addressId) {
       return NextResponse.json({ success: false, error: 'Address ID required.' }, { status: 400 });
     }
 
-    const ok = accountDataStore.deleteAddress(addressId, userId);
+    const ok = userScopedDataStore.deleteAddress(addressId, memberId);
     return NextResponse.json({ success: ok });
   } catch (error) {
     console.error('Error deleting address:', error);

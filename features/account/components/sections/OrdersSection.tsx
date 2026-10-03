@@ -16,7 +16,9 @@ import {
   ExternalLink,
   ShoppingBag,
 } from 'lucide-react';
+import Link from 'next/link';
 import { ClientOrder } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER, FALLBACK_PRODUCT_IMAGE } from '@/lib/wixImage';
 
 interface OrdersSectionProps {
   orders: ClientOrder[];
@@ -44,19 +46,18 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
           <ShoppingBag className="w-7 h-7" />
         </div>
         <h3 className="font-hero text-2xl uppercase tracking-wider text-[#2A221E] mb-2">
-          No Orders Placed Yet
+          No orders yet
         </h3>
         <p className="font-sans text-xs sm:text-sm text-[#6E645A] font-light max-w-md mx-auto mb-6 leading-relaxed">
           When you commission an artisanal saree from our atelier, your invoice, loom crafting updates, and tracking timelines will be detailed here.
         </p>
-        <button
-          type="button"
-          onClick={() => (window.location.href = '/collections')}
+        <Link
+          href="/collections"
           className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#7A1C28] hover:bg-[#60121D] text-[#FAF7F2] text-xs uppercase tracking-widest font-semibold rounded-full shadow-sm transition-all cursor-pointer"
         >
           <span>Discover The Weaves</span>
           <ArrowRight className="w-4 h-4" />
-        </button>
+        </Link>
       </motion.div>
     );
   }
@@ -147,10 +148,17 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
                   <div key={item.id} className="py-3 first:pt-0 last:pb-0 flex items-center gap-4">
                     <div className="relative w-16 h-20 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#E8DFD5] shrink-0">
                       <Image
-                        src={item.image}
+                        src={wixThumbImage(item.image) || FALLBACK_PRODUCT_IMAGE}
                         alt={item.name}
                         fill
+                        unoptimized={isWixImage(item.image)}
                         className="object-contain p-1"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                            target.src = SOFT_IVORY_PLACEHOLDER;
+                          }
+                        }}
                       />
                     </div>
                     <div className="flex-1 min-w-0 text-xs">
@@ -171,7 +179,7 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
                 ))}
               </div>
 
-              {/* Status & Eligibility Strip */}
+              {/* Status & Real Wix Details Strip */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD5] text-xs">
                 {/* Payment & Fulfillment */}
                 <div>
@@ -184,30 +192,46 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
                   </p>
                 </div>
 
-                {/* Return Eligibility */}
+                {/* Tracking Logistics or Real Return Details */}
                 <div>
-                  <span className="text-[10px] uppercase tracking-widest text-[#6E645A] block">
-                    Return / Exchange
-                  </span>
-                  <p className="font-medium mt-0.5">
-                    {order.returnStatus === 'RETURNED' ? (
-                      <span className="text-amber-700">Order Returned</span>
-                    ) : order.returnStatus === 'EXCHANGED' ? (
-                      <span className="text-amber-700">Weave Exchanged</span>
-                    ) : order.returnStatus === 'RETURN_REQUESTED' ? (
-                      <span className="text-amber-700">Return Requested</span>
-                    ) : order.returnStatus === 'EXCHANGE_REQUESTED' ? (
-                      <span className="text-amber-700">Exchange Requested</span>
-                    ) : isEligibleForReturn ? (
-                      <span className="text-emerald-700">
+                  {order.tracking?.trackingNumber ? (
+                    <>
+                      <span className="text-[10px] uppercase tracking-widest text-[#6E645A] block">
+                        Shipment Tracking
+                      </span>
+                      <p className="font-medium text-[#2A221E] mt-0.5 flex items-center gap-1.5">
+                        <Truck className="w-3.5 h-3.5 text-[#7A1C28]" />
+                        <span>{order.tracking.carrier || 'Courier'}: {order.tracking.trackingNumber}</span>
+                      </p>
+                    </>
+                  ) : isEligibleForReturn ? (
+                    <>
+                      <span className="text-[10px] uppercase tracking-widest text-[#6E645A] block">
+                        Return / Exchange
+                      </span>
+                      <p className="font-medium text-emerald-700 mt-0.5">
                         Eligible ({order.returnEligibility.daysRemaining} days left)
+                      </p>
+                    </>
+                  ) : order.returnStatus === 'RETURNED' || order.returnStatus === 'EXCHANGED' || order.returnStatus === 'RETURN_REQUESTED' || order.returnStatus === 'EXCHANGE_REQUESTED' ? (
+                    <>
+                      <span className="text-[10px] uppercase tracking-widest text-[#6E645A] block">
+                        Return Status
                       </span>
-                    ) : (
-                      <span className="text-[#6E645A]">
-                        {order.returnEligibility.reasonIfNotEligible || 'Window Closed'}
+                      <p className="font-medium text-amber-700 mt-0.5">
+                        {order.returnStatus.replace('_', ' ')}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[10px] uppercase tracking-widest text-[#6E645A] block">
+                        Commission Summary
                       </span>
-                    )}
-                  </p>
+                      <p className="font-medium text-[#2A221E] mt-0.5">
+                        {order.items.length} {order.items.length === 1 ? 'Handloom Saree' : 'Handloom Sarees'}
+                      </p>
+                    </>
+                  )}
                 </div>
 
                 {/* Membership Contribution */}
@@ -225,11 +249,7 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
                       <>
                         <ShieldAlert className="w-3.5 h-3.5 text-[#C89D5C] shrink-0" />
                         <span className="text-[#6E645A] truncate" title={order.membershipContribution.reason}>
-                          {order.membershipContribution.reason.includes('Active return window')
-                            ? 'Pending Return Window'
-                            : order.membershipContribution.reason.includes('returned') || order.membershipContribution.reason.includes('exchanged')
-                            ? 'Non-contributing (Returned/Exchanged)'
-                            : 'In Transit'}
+                          {order.membershipContribution.reason}
                         </span>
                       </>
                     )}
@@ -248,34 +268,28 @@ export const OrdersSection: React.FC<OrdersSectionProps> = ({
                     View Details
                   </button>
 
-                  <button
-                    type="button"
-                    onClick={() => onTrackOrder(order.id)}
-                    className="px-4 py-2 rounded-full bg-[#F3ECE3] hover:bg-[#E8DFD5] text-[#2A221E] text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                  >
-                    <Truck className="w-3.5 h-3.5 text-[#7A1C28]" />
-                    <span>Track Order</span>
-                  </button>
+                  {Boolean(order.tracking?.trackingNumber) && (
+                    <button
+                      type="button"
+                      onClick={() => onTrackOrder(order.id)}
+                      className="px-4 py-2 rounded-full bg-[#F3ECE3] hover:bg-[#E8DFD5] text-[#2A221E] text-xs uppercase tracking-wider font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <Truck className="w-3.5 h-3.5 text-[#7A1C28]" />
+                      <span>Track Order</span>
+                    </button>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2">
                   {isEligibleForReturn && !isReturnOrExchangeDone && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => onRequestReturn(order.id)}
-                        className="px-4 py-2 rounded-full border border-[#7A1C28] text-[#7A1C28] hover:bg-[#7A1C28]/10 text-xs uppercase tracking-wider font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
-                      >
-                        <RotateCcw className="w-3 h-3" />
-                        <span>Return / Exchange</span>
-                      </button>
-                    </>
-                  )}
-
-                  {isWindowClosed && !isReturnOrExchangeDone && (
-                    <span className="px-3.5 py-1.5 rounded-full bg-[#FAF7F2] border border-[#E8DFD5] text-[10px] uppercase tracking-widest font-medium text-[#6E645A]">
-                      Return Window Closed
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => onRequestReturn(order.id)}
+                      className="px-4 py-2 rounded-full border border-[#7A1C28] text-[#7A1C28] hover:bg-[#7A1C28]/10 text-xs uppercase tracking-wider font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
+                    >
+                      <RotateCcw className="w-3 h-3" />
+                      <span>Return / Exchange</span>
+                    </button>
                   )}
                 </div>
               </div>

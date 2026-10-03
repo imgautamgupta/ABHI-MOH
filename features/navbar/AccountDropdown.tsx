@@ -9,7 +9,19 @@ import { useAuth } from '@/features/account/AuthContext';
 export const AccountDropdown: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, user, login } = useAuth();
+
+  const handleAccountClick = () => {
+    if (!isLoggedIn) {
+      const currentPath =
+        typeof window !== 'undefined'
+          ? window.location.pathname + window.location.search
+          : '/account';
+      login(currentPath);
+    } else {
+      setIsOpen((prev) => !prev);
+    }
+  };
 
   // Click outside and Escape listener
   useEffect(() => {
@@ -40,7 +52,7 @@ export const AccountDropdown: React.FC = () => {
     <div ref={dropdownRef} className="relative inline-block text-left">
       <IconButton
         ariaLabel="Account"
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleAccountClick}
         className="relative"
       >
         {isLoggedIn && user ? (

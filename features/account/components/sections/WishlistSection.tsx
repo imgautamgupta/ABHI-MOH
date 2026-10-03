@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, ShoppingBag, Trash2, ArrowRight, Sparkles } from 'lucide-react';
 import { useFavorites } from '@/features/favorites/FavoritesContext';
 import { useCart } from '@/features/cart/CartContext';
+import { isWixImage, wixCardImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export const WishlistSection: React.FC = () => {
   const { favoriteProducts, removeFavorite, totalFavoriteCount } = useFavorites();
@@ -82,10 +83,17 @@ export const WishlistSection: React.FC = () => {
                 {/* Image Container */}
                 <div className="relative aspect-[3/4] bg-[#FAF7F2] w-full overflow-hidden">
                   <Image
-                    src={imageSrc}
+                    src={wixCardImage(imageSrc)}
                     alt={item.name}
                     fill
+                    unoptimized={isWixImage(imageSrc)}
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      const target = e.currentTarget;
+                      if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                        target.src = SOFT_IVORY_PLACEHOLDER;
+                      }
+                    }}
                   />
 
                   {/* Remove Button */}

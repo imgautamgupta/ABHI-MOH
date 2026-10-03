@@ -4,7 +4,10 @@ import { wixClient, WIX_OAUTH_DATA_COOKIE } from '@/lib/wix';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const returnUrl = searchParams.get('returnUrl') || '/account';
+    const rawReturn = searchParams.get('returnTo') || searchParams.get('returnUrl') || '/account';
+    const returnUrl = (rawReturn.startsWith('/') && !rawReturn.startsWith('//') && !rawReturn.startsWith('/\\'))
+      ? rawReturn
+      : '/account';
 
     // Construct the absolute callback URL based on host/headers (Vercel proxy compatible)
     const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || new URL(request.url).host;
@@ -16,9 +19,12 @@ export async function GET(request: NextRequest) {
     // Generate OAuth 2.0 PKCE data
     const oauthData = wixClient.auth.generateOAuthData(redirectUri, returnUrl);
 
-    // Retrieve Wix managed login URL
+    const sessionToken = searchParams.get('sessionToken') || undefined;
+
+    // Retrieve Wix managed login URL (uses sessionToken + prompt: none if available for silent exchange)
     const { authUrl } = await wixClient.auth.getAuthUrl(oauthData, {
       responseMode: 'query',
+      ...(sessionToken ? { sessionToken, prompt: 'none' } : {}),
     });
 
     const isJsonRequested = request.headers.get('accept')?.includes('application/json');

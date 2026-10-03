@@ -289,4 +289,35 @@ body {
   outline: 2px solid #D9C7A7 !important;
   outline-offset: 2px !important;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   THE SILK TAG AUTH EXPERIENCE ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes runningStitch {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -18;
+  }
+}
+
+@keyframes silkShimmerSlow {
+  0% {
+    transform: translateX(-150%) skewX(-15deg);
+  }
+  50%, 100% {
+    transform: translateX(250%) skewX(-15deg);
+  }
+}
+
+@keyframes goldThreadStitch {
+  0% {
+    stroke-dashoffset: 100%;
+  }
+  100% {
+    stroke-dashoffset: 0%;
+  }
+}
+
 

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, RotateCcw, RefreshCw, AlertCircle, ShieldAlert, CheckCircle2, Loader2 } from 'lucide-react';
 import { ClientOrder } from '@/lib/account/types';
+import { isWixImage, wixThumbImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 interface ReturnRequestModalProps {
   order: ClientOrder | null;
@@ -125,10 +126,17 @@ export const ReturnRequestModal: React.FC<ReturnRequestModalProps> = ({
                   {order.items[0]?.image && (
                     <div className="relative w-14 h-18 rounded-lg overflow-hidden bg-[#FAF7F2] border border-[#E8DFD5] shrink-0">
                       <Image
-                        src={order.items[0].image}
+                        src={wixThumbImage(order.items[0].image)}
                         alt={order.items[0].name}
                         fill
+                        unoptimized={isWixImage(order.items[0].image)}
                         className="object-contain p-1"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                            target.src = SOFT_IVORY_PLACEHOLDER;
+                          }
+                        }}
                       />
                     </div>
                   )}

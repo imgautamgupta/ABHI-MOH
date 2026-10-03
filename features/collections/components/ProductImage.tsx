@@ -9,6 +9,7 @@ import { Badge } from './Badge';
 import { BadgeType, SareeProduct } from './hanging-card.types';
 import { FavoriteItem } from '@/features/favorites/FavoritesContext';
 import { cn } from '@/lib/utils';
+import { isWixImage, wixCardImage, SOFT_IVORY_PLACEHOLDER } from '@/lib/wixImage';
 
 export interface ProductImageProps {
   productId?: string;
@@ -19,6 +20,7 @@ export interface ProductImageProps {
   isFavorite?: boolean;
   onFavoriteToggle?: (isFav: boolean) => void;
   className?: string;
+  priority?: boolean;
 }
 
 export const ProductImage: React.FC<ProductImageProps> = ({
@@ -30,6 +32,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
   isFavorite = false,
   onFavoriteToggle,
   className,
+  priority = false,
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
@@ -112,11 +115,19 @@ export const ProductImage: React.FC<ProductImageProps> = ({
             className="relative w-full h-full overflow-hidden"
           >
             <Image
-              src={activeImage}
+              src={wixCardImage(activeImage)}
               alt={title}
               fill
+              priority={priority}
+              unoptimized={isWixImage(activeImage)}
               sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
               className="object-contain object-center transition-transform duration-700 ease-out group-hover/img:scale-[1.03]"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (target.src !== SOFT_IVORY_PLACEHOLDER) {
+                  target.src = SOFT_IVORY_PLACEHOLDER;
+                }
+              }}
             />
           </motion.div>
         </AnimatePresence>
